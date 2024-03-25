@@ -1,3 +1,8 @@
+class State:
+    def __init__(self, name, final):
+        self.name = name
+        self.final = final
+
 
 class Automata:
     def __init__(self):
@@ -8,8 +13,11 @@ class Automata:
         self.final_states = []
         self.state_counter = 0
 
-    def add_state(self):
-        new_state = f'q{self.state_counter}'
+    def add_state(self, final):
+        new_name = f'q{self.state_counter}'
         self.state_counter += 1
-        self.states.append(new_state)
-        return new_state
+
+        state = State(new_name, final)
+
+        self.states.append(state)
+        return state

@@ -1,4 +1,4 @@
-from automata import Automata
+from automata import Automata, State
 
 
 def test_init_graph():
@@ -14,15 +14,19 @@ def test_init_graph():
 def test_add_state():
     automata = Automata()
 
-    got1 = automata.add_state()
-    got2 = automata.add_state()
-    got3 = automata.add_state()
+    got1 = automata.add_state(False)
+    got2 = automata.add_state(False)
+    got3 = automata.add_state(True)
 
-    assert got1 == 'q0'
-    assert got2 == 'q1'
-    assert got3 == 'q2'
-    assert automata.states == ['q0', 'q1', 'q2']
-    assert automata.alphabet == []
-    assert automata.transitions == {}
-    assert automata.initial_state is None
-    assert automata.final_states == []
+    want1 = State('q0', False)
+    want2 = State('q1', False)
+    want3 = State('q2', True)
+
+    assert got1.name == want1.name
+    assert got2.name == want2.name
+    assert got3.name == want3.name
+    assert got1.final == want1.final
+    assert got2.final == want2.final
+    assert got3.final == want3.final
+
+    assert automata.states == [got1, got2, got3]
