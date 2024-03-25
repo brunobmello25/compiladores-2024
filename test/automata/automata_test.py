@@ -1,4 +1,4 @@
-from automata import Automata, State
+from src.automata.automata import Automata, State
 
 
 def test_init_graph():
