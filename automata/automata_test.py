@@ -12,12 +12,17 @@ def test_init_graph():
 
 
 def test_add_state():
-    got = Automata()
+    automata = Automata()
 
-    got.add_state('q0')
+    got1 = automata.add_state()
+    got2 = automata.add_state()
+    got3 = automata.add_state()
 
-    assert got.states == ['q0']
-    assert got.alphabet == []
-    assert got.transitions == {}
-    assert got.initial_state is None
-    assert got.final_states == []
+    assert got1 == 'q0'
+    assert got2 == 'q1'
+    assert got3 == 'q2'
+    assert automata.states == ['q0', 'q1', 'q2']
+    assert automata.alphabet == []
+    assert automata.transitions == {}
+    assert automata.initial_state is None
+    assert automata.final_states == []
