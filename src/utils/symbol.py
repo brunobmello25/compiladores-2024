@@ -2,12 +2,13 @@ from enum import Enum
 
 
 class Symbol(Enum):
-    MAIUSCULA = "[A-Z]"
-    MINUSCULA = "[a-z]"
-    TEXTO = "[A-z]"
-    NUMERICO = "[0-9]"
-    ESTRELA = "*"
-    MAIS = "+"
-    OU = "|"
-    ABRE_PARENTESES = "("
-    FECHA_PARENTESES = ")"
+    UPPER = "[A-Z]"
+    LOWER = "[a-z]"
+    TEXT = "[A-z]"
+    NUMBER = "[0-9]"
+    STAR = "*"
+    PLUS = "+"
+    OR = "|"
+    OPEN_PARENTHESIS = "("
+    CLOSE_PARENTHESIS = ")"
+    EOF = "EOF"
