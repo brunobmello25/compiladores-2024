@@ -25,7 +25,7 @@ def test_next_symbol():
         assert symbol == expected_symbol
 
 
-def test_regex_symbol():
+def test_regex_shortcut():
     tests = [
         {
             "input": "[A-Z]",
@@ -47,5 +47,5 @@ def test_regex_symbol():
 
     for test in tests:
         lexer = RegexLexer(test["input"])
-        symbol = lexer._handle_regex_symbol()
+        symbol = lexer._handle_regex_shortcut()
         assert symbol == test["expected"]

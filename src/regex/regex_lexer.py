@@ -12,7 +12,7 @@ class RegexLexer:
             return Symbol.EOF
 
         if self.input[self.pos] == "[":
-            return self._handle_regex_symbol()
+            return self._handle_regex_shortcut()
 
         if self.input[self.pos] == Symbol.OPEN_PARENTHESIS.value:
             self.pos += 1
@@ -34,7 +34,7 @@ class RegexLexer:
             self.pos += 1
             return Symbol.PLUS
 
-    def _handle_regex_symbol(self) -> Symbol:
+    def _handle_regex_shortcut(self) -> Symbol:
         inner_content = self.input[self.pos+1: self.pos+4]
 
         self.pos += 5
