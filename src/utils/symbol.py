@@ -11,7 +11,7 @@ class SymbolType(Enum):
     OR = "|"
     OPEN_PARENTHESIS = "("
     CLOSE_PARENTHESIS = ")"
-    DIGIT = "DIGIT"
+    NUMERIC_DIGIT = "DIGIT"
     LETTER = "LETTER"
     EOF = "EOF"
     ILLEGAL = "ILLEGAL"

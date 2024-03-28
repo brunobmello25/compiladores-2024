@@ -32,11 +32,27 @@ class RegexLexer:
             self.pos += 1
             return Symbol(SymbolType.STAR, SymbolType.STAR.value)
 
+        if self.is_alphabetic_digit(self.input[self.pos]):
+            char = self.input[self.pos]
+            self.pos += 1
+            return Symbol(SymbolType.LETTER, char)
+
+        if self.is_numeric_digit(self.input[self.pos]):
+            digit = self.input[self.pos]
+            self.pos += 1
+            return Symbol(SymbolType.NUMERIC_DIGIT, digit)
+
         if self.input[self.pos] == SymbolType.PLUS.value:
             self.pos += 1
             return Symbol(SymbolType.PLUS, SymbolType.PLUS.value)
 
         return Symbol(SymbolType.ILLEGAL, self.input[self.pos])
+
+    def is_alphabetic_digit(self, c: str) -> bool:
+        return len(c) == 1 and c.isalpha()
+
+    def is_numeric_digit(self, c: str) -> bool:
+        return len(c) == 1 and c.isdigit()
 
     def _handle_regex_shortcut(self) -> Symbol:
         inner_content = self.input[self.pos+1: self.pos+4]

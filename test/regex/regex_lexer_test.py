@@ -3,7 +3,7 @@ from src.utils.symbol import Symbol, SymbolType
 
 
 def test_next_symbol():
-    input = "([A-z]|[A-Z])[0-9]*[a-z]+[xyz]"
+    input = "([A-z]|[A-Z])[0-9]*[a-z]+[xyz]aBCd12"
     expected_symbols = [
         Symbol(SymbolType.OPEN_PARENTHESIS, SymbolType.OPEN_PARENTHESIS.value),
         Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
@@ -16,6 +16,12 @@ def test_next_symbol():
         Symbol(SymbolType.LOWER, SymbolType.LOWER.value),
         Symbol(SymbolType.PLUS, SymbolType.PLUS.value),
         Symbol(SymbolType.ILLEGAL, "[xyz]"),
+        Symbol(SymbolType.LETTER, "a"),
+        Symbol(SymbolType.LETTER, "B"),
+        Symbol(SymbolType.LETTER, "C"),
+        Symbol(SymbolType.LETTER, "d"),
+        Symbol(SymbolType.NUMERIC_DIGIT, "1"),
+        Symbol(SymbolType.NUMERIC_DIGIT, "2"),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),
