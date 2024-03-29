@@ -19,7 +19,7 @@ class Automata:
         self.state_counter: int = 0
 
     def add_state(self, final):
-        new_name = f'q{self.state_counter}'
+        new_name = f"q{self.state_counter}"
         self.state_counter += 1
 
         state = State(new_name, final)

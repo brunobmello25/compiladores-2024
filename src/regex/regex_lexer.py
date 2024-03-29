@@ -16,13 +16,15 @@ class RegexLexer:
 
         if self.input[self.pos] == SymbolType.OPEN_PARENTHESIS.value:
             self.pos += 1
-            return Symbol(SymbolType.OPEN_PARENTHESIS,
-                          SymbolType.OPEN_PARENTHESIS.value)
+            return Symbol(
+                SymbolType.OPEN_PARENTHESIS, SymbolType.OPEN_PARENTHESIS.value
+            )
 
         if self.input[self.pos] == SymbolType.CLOSE_PARENTHESIS.value:
             self.pos += 1
-            return Symbol(SymbolType.CLOSE_PARENTHESIS,
-                          SymbolType.CLOSE_PARENTHESIS.value)
+            return Symbol(
+                SymbolType.CLOSE_PARENTHESIS, SymbolType.CLOSE_PARENTHESIS.value
+            )
 
         if self.input[self.pos] == SymbolType.OR.value:
             self.pos += 1
@@ -55,7 +57,7 @@ class RegexLexer:
         return len(c) == 1 and c.isdigit()
 
     def _handle_regex_shortcut(self) -> Symbol:
-        inner_content = self.input[self.pos+1: self.pos+4]
+        inner_content = self.input[self.pos + 1 : self.pos + 4]
 
         self.pos += 5
 
