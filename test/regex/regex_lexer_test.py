@@ -9,8 +9,7 @@ def test_next_symbol():
         Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
         Symbol(SymbolType.OR, SymbolType.OR.value),
         Symbol(SymbolType.UPPER, SymbolType.UPPER.value),
-        Symbol(SymbolType.CLOSE_PARENTHESIS,
-               SymbolType.CLOSE_PARENTHESIS.value),
+        Symbol(SymbolType.CLOSE_PARENTHESIS, SymbolType.CLOSE_PARENTHESIS.value),
         Symbol(SymbolType.NUMBER, SymbolType.NUMBER.value),
         Symbol(SymbolType.STAR, SymbolType.STAR.value),
         Symbol(SymbolType.LOWER, SymbolType.LOWER.value),
@@ -40,20 +39,17 @@ def test_regex_shortcut():
     tests = [
         {
             "input": "[A-Z]",
-            "expected": Symbol(SymbolType.UPPER, SymbolType.UPPER.value)
+            "expected": Symbol(SymbolType.UPPER, SymbolType.UPPER.value),
         },
         {
             "input": "[a-z]",
-            "expected": Symbol(SymbolType.LOWER, SymbolType.LOWER.value)
+            "expected": Symbol(SymbolType.LOWER, SymbolType.LOWER.value),
         },
-        {
-            "input": "[A-z]",
-            "expected": Symbol(SymbolType.TEXT, SymbolType.TEXT.value)
-        },
+        {"input": "[A-z]", "expected": Symbol(SymbolType.TEXT, SymbolType.TEXT.value)},
         {
             "input": "[0-9]",
-            "expected": Symbol(SymbolType.NUMBER, SymbolType.NUMBER.value)
-        }
+            "expected": Symbol(SymbolType.NUMBER, SymbolType.NUMBER.value),
+        },
     ]
 
     for test in tests:

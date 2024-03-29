@@ -1,5 +1,6 @@
 from src.regex.regex_lexer import RegexLexer
-from src.regex.regex_tree import Node
+from src.regex.regex_tree import RegexNode, RegexUnaryNode
+from src.utils.symbol import Symbol, SymbolType
 
 
 # Uma regex pode ser composta de alguns módulos:
@@ -11,9 +12,32 @@ class RegexParser:
     def __init__(self, regex_lexer: RegexLexer):
         self.regex_lexer = regex_lexer
         self.current_symbol = self.regex_lexer.next_symbol()
+        self.last_inserted: RegexNode | None = None
+        self.root: RegexNode | None = None
 
-    def parse(self) -> Node:
-        return self._parse_expression()
+    def parse(self):
+        while self._is_content_symbol(self.current_symbol):
+            node = RegexUnaryNode(self.current_symbol)
 
-    def _parse_expression(self) -> Node:
-        return Node()
+            if self.root is None or self.last_inserted is None:
+                self.root = node
+            else:
+                self.last_inserted.add_child(node)
+            self.last_inserted = node
+
+            self._consume()
+
+        return self.root
+
+    def _is_content_symbol(self, symbol: Symbol):
+        return symbol.type in [
+            SymbolType.UPPER,
+            SymbolType.LOWER,
+            SymbolType.TEXT,
+            SymbolType.NUMBER,
+            SymbolType.NUMERIC_DIGIT,
+            SymbolType.LETTER,
+        ]
+
+    def _consume(self):
+        self.current_symbol = self.regex_lexer.next_symbol()
