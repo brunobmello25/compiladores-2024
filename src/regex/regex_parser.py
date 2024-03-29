@@ -1,5 +1,5 @@
 from src.regex.regex_lexer import RegexLexer
-from src.regex.regex_tree import RegexNode, RegexUnaryNode
+from src.regex.regex_tree import RegexBinaryNode, RegexNode, RegexUnaryNode
 from src.utils.symbol import Symbol, SymbolType
 
 
@@ -26,6 +26,13 @@ class RegexParser:
             self.last_inserted = node
 
             self._consume()
+
+        if self.current_symbol.type == SymbolType.OR:
+            or_node = RegexBinaryNode(self.current_symbol)
+
+            or_node.left = self.root
+            or_node.right = RegexParser(self.regex_lexer).parse()
+            self.root = or_node
 
         return self.root
 
