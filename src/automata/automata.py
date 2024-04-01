@@ -10,17 +10,18 @@ class State:
 
 
 class Automata:
+    state_counter: int = 0
+
     def __init__(self):
         self.states: List[State] = []
         self.alphabet: List[Symbol] = []
         self.transitions: dict[tuple[State, Symbol], State] = {}
         self.initial_state: State | None = None
         self.final_states: List[State] = []
-        self.state_counter: int = 0
 
     def add_state(self, final):
-        new_name = f'q{self.state_counter}'
-        self.state_counter += 1
+        new_name = f"q{Automata.state_counter}"
+        Automata.state_counter += 1
 
         state = State(new_name, final)
 
