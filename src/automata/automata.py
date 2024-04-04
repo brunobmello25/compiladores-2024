@@ -12,7 +12,7 @@ class Automata:
         self.start_state: str | None = None
         self.accept_states: List[str] = []
         self.current_state: str | None = None
-        self.transition_function: Dict[Tuple[str, Symbol], Set[str]] = {}
+        self.transition_function: Dict[Tuple[str, str], Set[str]] = {}
 
     def add_state(self, final: bool) -> str:
         new_state = f"q{Automata.state_counter}"
@@ -24,7 +24,7 @@ class Automata:
 
         return new_state
 
-    def add_transition(self, start: str, end: str, symbol: Symbol):
-        if (start, symbol) not in self.transition_function:
-            self.transition_function[(start, symbol)] = set()
-        self.transition_function[(start, symbol)].add(end)
+    def add_transition(self, start: str, end: str, value: str):
+        if (start, value) not in self.transition_function:
+            self.transition_function[(start, value)] = set()
+        self.transition_function[(start, value)].add(end)

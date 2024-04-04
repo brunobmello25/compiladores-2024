@@ -32,3 +32,19 @@ def test_add_state():
 
     assert a2.states == ["q3", "q4"]
     assert a2.accept_states == ["q3"]
+
+
+def test_add_transition():
+    a = Automata()
+    a.add_state(False)
+    a.add_state(True)
+    a.add_state(False)
+
+    a.add_transition("q0", "q1", "a")
+    a.add_transition("q1", "q2", "1")
+    a.add_transition("q1", "q0", "1")
+    a.add_transition("q2", "q0", "[A-Z]")
+
+    assert a.transition_function[("q0", "a")] == {"q1"}
+    assert a.transition_function[("q1", "1")] == {"q2", "q0"}
+    assert a.transition_function[("q2", "[A-Z]")] == {"q0"}
