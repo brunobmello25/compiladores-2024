@@ -3,27 +3,23 @@ from typing import List
 from src.utils.symbol import Symbol
 
 
-class State:
-    def __init__(self, name, final):
-        self.name: str = name
-        self.final: bool = final
-
-
 class Automata:
-    state_counter: int = 0
+    state_counter = 0
 
     def __init__(self):
-        self.states: List[State] = []
+        self.states: List[str] = []
         self.alphabet: List[Symbol] = []
-        self.transitions: dict[tuple[State, Symbol], State] = {}
-        self.initial_state: State | None = None
-        self.final_states: List[State] = []
+        self.start_state: str | None = None
+        self.accept_states: List[str] = []
+        self.current_state: str | None = None
+        self.transition_function = {}
 
-    def add_state(self, final):
-        new_name = f"q{Automata.state_counter}"
+    def add_state(self, final: bool) -> str:
+        new_state = f"q{Automata.state_counter}"
         Automata.state_counter += 1
 
-        state = State(new_name, final)
+        self.states.append(new_state)
+        if final:
+            self.accept_states.append(new_state)
 
-        self.states.append(state)
-        return state
+        return new_state
