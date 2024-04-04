@@ -1,7 +1,7 @@
 from enum import Enum
 
 
-class Symbol(Enum):
+class SymbolType(Enum):
     UPPER = "[A-Z]"
     LOWER = "[a-z]"
     TEXT = "[A-z]"
@@ -11,4 +11,13 @@ class Symbol(Enum):
     OR = "|"
     OPEN_PARENTHESIS = "("
     CLOSE_PARENTHESIS = ")"
+    NUMERIC_DIGIT = "DIGIT"
+    LETTER = "LETTER"
     EOF = "EOF"
+    ILLEGAL = "ILLEGAL"
+
+
+class Symbol:
+    def __init__(self, type: SymbolType, value: str):
+        self.type = type
+        self.value = value
