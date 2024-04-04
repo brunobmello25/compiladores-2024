@@ -1,17 +1,54 @@
 from src.automata.automata import Automata
 
 
+def test_union():
+    Automata.state_counter = 0
+    a1 = Automata()
+    q0 = a1.add_state(False)
+    q1 = a1.add_state(True)
+    a1.set_start(q0)
+    a1.add_transition(q0, q1, "a")
+
+    a2 = Automata()
+    q2 = a2.add_state(False)
+    q3 = a2.add_state(True)
+    a2.set_start(q2)
+    a2.add_transition(q2, q3, "b")
+
+    result = Automata.union(a1, a2)
+
+    assert result.states == ["q4", "q5", "q6", "q7", "q8"]
+    assert result.start_state == "q4"
+    assert result.accept_states == ["q6", "q8"]
+    assert result.transition_function[("q4", None)] == {"q5", "q7"}
+    assert result.transition_function[("q5", "a")] == {"q6"}
+    assert result.transition_function[("q7", "b")] == {"q8"}
+    assert len(result.transition_function.keys()) == 3
+
+
+def test_set_start():
+    Automata.state_counter = 0
+    a = Automata()
+    a.add_state(False)
+    a.add_state(True)
+    a.add_state(False)
+
+    assert a.start_state is None
+    a.set_start("q1")
+    assert a.start_state == "q1"
+
+
 def test_init_automata():
     got = Automata()
 
     assert got.states == []
-    assert got.alphabet == []
     assert got.transition_function == {}
     assert got.start_state is None
     assert got.accept_states == []
 
 
 def test_add_state():
+    Automata.state_counter = 0
     a1 = Automata()
     a2 = Automata()
 
@@ -35,6 +72,7 @@ def test_add_state():
 
 
 def test_add_transition():
+    Automata.state_counter = 0
     a = Automata()
     a.add_state(False)
     a.add_state(True)
