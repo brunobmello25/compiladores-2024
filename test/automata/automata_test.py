@@ -1,6 +1,42 @@
 from src.automata.automata import Automata
 
 
+def test_plus():
+    Automata.state_counter = 0
+    a = Automata()
+    q0 = a.add_state(False)
+    q1 = a.add_state(True)
+    a.set_start(q0)
+    a.add_transition(q0, q1, "a")
+
+    a.plus()
+
+    assert a.states == ["q0", "q1"]
+    assert a.start_state == "q0"
+    assert a.accept_states == ["q1"]
+    assert a.transition_function[("q0", "a")] == {"q1"}
+    assert a.transition_function[("q1", None)] == {"q0"}
+    assert len(a.transition_function.keys()) == 2
+
+
+def test_star():
+    Automata.state_counter = 0
+    a = Automata()
+    q0 = a.add_state(False)
+    q1 = a.add_state(True)
+    a.set_start(q0)
+    a.add_transition(q0, q1, "a")
+
+    a.star()
+
+    assert a.states == ["q0", "q1"]
+    assert a.start_state == "q0"
+    assert a.accept_states == ["q1", "q0"]
+    assert a.transition_function[("q0", "a")] == {"q1"}
+    assert a.transition_function[("q1", None)] == {"q0"}
+    assert len(a.transition_function.keys()) == 2
+
+
 def test_concat():
     # TODO: isso deveria estar em um beforeEach
     Automata.state_counter = 0

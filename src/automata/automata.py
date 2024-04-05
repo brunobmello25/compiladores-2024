@@ -92,3 +92,17 @@ class Automata:
         for state in original_accept_states:
             self.add_transition(state, a2_state_map[a2.start_state], None)
             self.accept_states.remove(state)
+
+    def plus(self):
+        if self.start_state is None:
+            raise ValueError("Automata must have a start state")
+
+        for state in self.accept_states:
+            self.add_transition(state, self.start_state, None)
+
+    def star(self):
+        if self.start_state is None:
+            raise ValueError("Automata must have a start state")
+
+        self.plus()
+        self.accept_states.append(self.start_state)
