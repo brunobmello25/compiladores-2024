@@ -37,6 +37,15 @@ class Automata:
 
         return automata
 
+    def check_transition_by_state_name(self, start_name: str, end_name: str, symbol: str | None) -> bool:
+        for key, states in self.transition_function.items():
+            if key[0].name == start_name and key[1] == symbol:
+                for state in states:
+                    if state.name == end_name:
+                        return True
+                break
+        return False
+
     def optional(self):
         self.accept_states.add(self.start_state)
 
