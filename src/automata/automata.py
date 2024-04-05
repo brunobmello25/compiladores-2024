@@ -1,115 +1,57 @@
-from typing import List, Tuple, Dict, Set
+from typing import Tuple, Dict, Set
+
+from src.automata.state import State
 
 
 class Automata:
-    state_counter = 0
-
     def __init__(self):
-        self.states: List[str] = []
+        self.start_state: State = State()
+        self.states: Set[State] = {self.start_state}
+        self.accept_states: Set[State] = {self.start_state}
+        self.transition_function: Dict[Tuple[State, str | None], Set[State]] = {}
 
-        # TODO: tirar esse None e iniciar um automato com um estado
-        self.start_state: str | None = None
+    def add_state(self, final: bool) -> State:
+        new_state = State()
 
-        self.accept_states: List[str] = []
-        self.transition_function: Dict[Tuple[str, str | None], Set[str]] = {}
-
-    def add_state(self, final: bool) -> str:
-        new_state = f"q{Automata.state_counter}"
-        Automata.state_counter += 1
-
-        self.states.append(new_state)
+        self.states.add(new_state)
         if final:
-            self.accept_states.append(new_state)
+            self.accept_states.add(new_state)
 
         return new_state
 
-    def add_transition(self, start: str, end: str, symbol: str | None):
+    def add_transition(self, start: State, end: State, symbol: str | None):
         if (start, symbol) not in self.transition_function:
             self.transition_function[(start, symbol)] = set()
         self.transition_function[(start, symbol)].add(end)
 
-    def set_start(self, state: str):
-        if state not in self.states:
-            raise ValueError(f"State {state} does not exist")
-        self.start_state = state
-
-    def is_accept(self, state: str) -> bool:
-        return state in self.accept_states
-
-    # TODO: não deveria fazer uma cópia do zero
     @staticmethod
     def union(a1: "Automata", a2: "Automata") -> "Automata":
-        a1_state_map = {}
-        a2_state_map = {}
+        automata = Automata()
 
-        a = Automata()
+        automata.states.update(a1.states, a2.states)
+        automata.accept_states.update(a1.accept_states, a2.accept_states)
+        automata.transition_function = automata.transition_function | a1.transition_function | a2.transition_function
 
-        start_state_union = a.add_state(False)
-        a.set_start(start_state_union)
+        automata.add_transition(automata.start_state, a1.start_state, None)
+        automata.add_transition(automata.start_state, a2.start_state, None)
 
-        for state in a1.states:
-            new_state = a.add_state(a1.is_accept(state))
-            a1_state_map[state] = new_state
-
-        for state in a2.states:
-            new_state = a.add_state(a2.is_accept(state))
-            a2_state_map[state] = new_state
-
-        for transition in a1.transition_function.keys():
-            start, symbol = transition
-            for end in a1.transition_function[transition]:
-                a.add_transition(
-                    a1_state_map[start], a1_state_map[end], symbol
-                )
-
-        for transition in a2.transition_function.keys():
-            start, symbol = transition
-            for end in a2.transition_function[transition]:
-                a.add_transition(
-                    a2_state_map[start], a2_state_map[end], symbol
-                )
-
-        a.add_transition(start_state_union, a1_state_map[a1.start_state], None)
-        a.add_transition(start_state_union, a2_state_map[a2.start_state], None)
-
-        return a
+        return automata
 
     def optional(self):
-        if self.start_state is None:
-            raise ValueError("Automata must have a start state")
-
-        self.accept_states.append(self.start_state)
+        self.accept_states.add(self.start_state)
 
     def concat(self, a2: "Automata"):
-        a2_state_map = {}
+        for state in self.accept_states:
+            self.add_transition(state, a2.start_state, None)
 
-        original_accept_states = self.accept_states.copy()
-
-        for state in a2.states:
-            new_state = self.add_state(a2.is_accept(state))
-            a2_state_map[state] = new_state
-
-        for transition in a2.transition_function.keys():
-            start, symbol = transition
-            for end in a2.transition_function[transition]:
-                self.add_transition(
-                    a2_state_map[start], a2_state_map[end], symbol
-                )
-
-        for state in original_accept_states:
-            self.add_transition(state, a2_state_map[a2.start_state], None)
-            self.accept_states.remove(state)
+        self.states.update(a2.states)
+        self.accept_states = a2.accept_states
+        self.transition_function = self.transition_function | a2.transition_function
 
     def plus(self):
-        if self.start_state is None:
-            raise ValueError("Automata must have a start state")
-
         for state in self.accept_states:
             self.add_transition(state, self.start_state, None)
 
     def star(self):
-        if self.start_state is None:
-            raise ValueError("Automata must have a start state")
-
         self.plus()
-        self.accept_states.append(self.start_state)
+        self.accept_states.add(self.start_state)
