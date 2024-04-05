@@ -72,3 +72,23 @@ class Automata:
         a.add_transition(start_state_union, a2_state_map[a2.start_state], None)
 
         return a
+
+    def concat(self, a2: "Automata"):
+        a2_state_map = {}
+
+        original_accept_states = self.accept_states.copy()
+
+        for state in a2.states:
+            new_state = self.add_state(a2.is_accept(state))
+            a2_state_map[state] = new_state
+
+        for transition in a2.transition_function.keys():
+            start, symbol = transition
+            for end in a2.transition_function[transition]:
+                self.add_transition(
+                    a2_state_map[start], a2_state_map[end], symbol
+                )
+
+        for state in original_accept_states:
+            self.add_transition(state, a2_state_map[a2.start_state], None)
+            self.accept_states.remove(state)

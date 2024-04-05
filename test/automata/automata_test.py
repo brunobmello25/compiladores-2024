@@ -1,6 +1,42 @@
 from src.automata.automata import Automata
 
 
+def test_concat():
+    # TODO: isso deveria estar em um beforeEach
+    Automata.state_counter = 0
+    a1 = Automata()
+    q0 = a1.add_state(False)
+    q1 = a1.add_state(False)
+    q2 = a1.add_state(True)
+    q3 = a1.add_state(False)
+    q4 = a1.add_state(True)
+    a1.add_transition(q0, q1, None)
+    a1.add_transition(q1, q2, "a")
+    a1.add_transition(q0, q3, None)
+    a1.add_transition(q3, q4, "b")
+    a1.set_start(q0)
+
+    a2 = Automata()
+    q5 = a2.add_state(False)
+    q6 = a2.add_state(True)
+    a2.add_transition(q5, q6, "c")
+    a2.set_start(q5)
+
+    a1.concat(a2)
+
+    assert a1.states == ["q0", "q1", "q2", "q3", "q4", "q7", "q8"]
+    assert a1.start_state == "q0"
+    assert a1.accept_states == ["q8"]
+
+    assert a1.transition_function[("q0", None)] == {"q1", "q3"}
+    assert a1.transition_function[("q1", "a")] == {"q2"}
+    assert a1.transition_function[("q3", "b")] == {"q4"}
+    assert a1.transition_function[("q2", None)] == {"q7"}
+    assert a1.transition_function[("q4", None)] == {"q7"}
+    assert a1.transition_function[("q7", "c")] == {"q8"}
+    assert len(a1.transition_function.keys()) == 6
+
+
 def test_union():
     Automata.state_counter = 0
     a1 = Automata()
