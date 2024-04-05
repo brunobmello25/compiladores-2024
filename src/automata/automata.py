@@ -36,6 +36,7 @@ class Automata:
     def is_accept(self, state: str) -> bool:
         return state in self.accept_states
 
+    # TODO: não deveria fazer uma cópia do zero
     @staticmethod
     def union(a1: "Automata", a2: "Automata") -> "Automata":
         a1_state_map = {}
@@ -72,6 +73,12 @@ class Automata:
         a.add_transition(start_state_union, a2_state_map[a2.start_state], None)
 
         return a
+
+    def optional(self):
+        if self.start_state is None:
+            raise ValueError("Automata must have a start state")
+
+        self.accept_states.append(self.start_state)
 
     def concat(self, a2: "Automata"):
         a2_state_map = {}
