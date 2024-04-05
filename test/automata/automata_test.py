@@ -1,3 +1,4 @@
+from typing import Tuple
 from src.automata.automata import Automata
 from src.automata.state import State
 
@@ -70,7 +71,7 @@ def test_union():
     q4 = result.start_state
 
     assert result.states == {q0, q1, q2, q3, q4}
-    assert result.accept_states == {q1, q3, q4}
+    assert result.accept_states == {q1, q3}
     assert result.transition_function[(q4, None)] == {q0, q2}
     assert result.transition_function[(q0, "a")] == {q1}
     assert result.transition_function[(q2, "b")] == {q3}
@@ -167,7 +168,7 @@ def test_star():
     assert len(a.transition_function.keys()) == 2
 
 
-def make_basic_char_automata(symbol="a") -> (Automata, State, State):
+def make_basic_char_automata(symbol="a") -> Tuple[Automata, State, State]:
     a = Automata()
 
     q0 = a.accept_states.pop()
