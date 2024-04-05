@@ -2,6 +2,7 @@ from src.automata.state import State
 
 
 def test_state_name():
+    State.state_counter = 0
     q0 = State()
     q1 = State()
 
