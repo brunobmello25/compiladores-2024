@@ -1,10 +1,10 @@
-from src.automata.automata import Automata
+from src.automata.state import State
 from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
 def test_parse_concat_regex():
-    Automata.state_counter = 0
+    State.state_counter = 0
     lexer = RegexLexer("abc")
 
     result = RegexParser(lexer).parse()
