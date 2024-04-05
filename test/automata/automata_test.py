@@ -1,7 +1,26 @@
 from src.automata.automata import Automata
 
 
+def test_concat_empty_with_symbol():
+    Automata.state_counter = 0
+    empty = Automata()
+    start_state = empty.add_state(True)
+    empty.set_start(start_state)
+
+    symbol_automata = make_basic_char_automata()
+
+    empty.concat(symbol_automata)
+
+    assert empty.states == ["q0", "q3", "q4"]
+    assert empty.accept_states == ["q4"]
+    assert empty.start_state == "q0"
+    assert empty.transition_function[("q0", None)] == {"q3"}
+    assert empty.transition_function[("q3", "a")] == {"q4"}
+    assert len(empty.transition_function.keys()) == 2
+
+
 def test_optional():
+    Automata.state_counter = 0
     a = make_basic_char_automata()
 
     a.optional()
@@ -13,6 +32,7 @@ def test_optional():
 
 
 def test_plus():
+    Automata.state_counter = 0
     a = make_basic_char_automata()
 
     a.plus()
@@ -26,6 +46,7 @@ def test_plus():
 
 
 def test_star():
+    Automata.state_counter = 0
     a = make_basic_char_automata()
 
     a.star()
@@ -75,6 +96,7 @@ def test_concat():
 
 
 def test_union():
+    Automata.state_counter = 0
     a1 = make_basic_char_automata()
 
     a2 = Automata()
@@ -107,6 +129,7 @@ def test_set_start():
 
 
 def test_init_automata():
+    Automata.state_counter = 0
     got = Automata()
 
     assert got.states == []
@@ -157,7 +180,6 @@ def test_add_transition():
 
 
 def make_basic_char_automata() -> Automata:
-    Automata.state_counter = 0
     a = Automata()
     q0 = a.add_state(False)
     q1 = a.add_state(True)

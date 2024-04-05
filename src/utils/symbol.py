@@ -21,3 +21,13 @@ class Symbol:
     def __init__(self, type: SymbolType, value: str):
         self.type = type
         self.value = value
+
+    def is_content_symbol(self):
+        return self.type in [
+            SymbolType.UPPER,
+            SymbolType.LOWER,
+            SymbolType.TEXT,
+            SymbolType.NUMBER,
+            SymbolType.NUMERIC_DIGIT,
+            SymbolType.LETTER,
+        ]

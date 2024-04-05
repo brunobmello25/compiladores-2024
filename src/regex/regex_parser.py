@@ -1,50 +1,49 @@
+from src.automata.automata import Automata
 from src.regex.regex_lexer import RegexLexer
-from src.regex.regex_tree import RegexBinaryNode, RegexNode, RegexUnaryNode
 from src.utils.symbol import Symbol, SymbolType
 
 
-# Uma regex pode ser composta de alguns módulos:
-# - expressões -> por exemplo, regex [A-Z][a-z] é composta pelas expressões [A-Z] e [a-z]
-# - termos -> são vistos como a concatenação de fatores: Por exemplo, o termo "ab" é a concatenação do fator a com o fator b
-# - fatores -> são atomicos sucedidos de um quantificador (* ou +). Por ex.: a* ou (ab)+
-# - atomicos -> pode ser um único simbolo, ou uma subexpressão dentro de parenteses
 class RegexParser:
     def __init__(self, regex_lexer: RegexLexer):
         self.regex_lexer = regex_lexer
         self.current_symbol = self.regex_lexer.next_symbol()
-        self.last_inserted: RegexNode | None = None
-        self.root: RegexNode | None = None
+        self.peek_symbol = self.regex_lexer.next_symbol()
 
-    def parse(self):
-        while self._is_content_symbol(self.current_symbol):
-            node = RegexUnaryNode(self.current_symbol)
+    def parse(self) -> Automata:
+        automata = self._make_empty_word_automata()
 
-            if self.root is None or self.last_inserted is None:
-                self.root = node
-            else:
-                self.last_inserted.add_child(node)
-            self.last_inserted = node
+        if self.current_symbol.type == SymbolType.EOF:
+            return automata
 
+        while self.current_symbol.is_content_symbol():
+            new_automata = self._make_symbol_automata(self.current_symbol)
+            automata.concat(new_automata)
             self._consume()
 
-        if self.current_symbol.type == SymbolType.OR:
-            or_node = RegexBinaryNode(self.current_symbol)
+        if self.current_symbol.type == SymbolType.OPEN_PARENTHESIS:
+            self._consume()
+            automata.concat(self.parse())
 
-            or_node.left = self.root
-            or_node.right = RegexParser(self.regex_lexer).parse()
-            self.root = or_node
+        if self.current_symbol.type == SymbolType.CLOSE_PARENTHESIS:
+            self._consume()
+            automata.concat(self.parse())
 
-        return self.root
+        return automata
 
-    def _is_content_symbol(self, symbol: Symbol):
-        return symbol.type in [
-            SymbolType.UPPER,
-            SymbolType.LOWER,
-            SymbolType.TEXT,
-            SymbolType.NUMBER,
-            SymbolType.NUMERIC_DIGIT,
-            SymbolType.LETTER,
-        ]
+    def _make_empty_word_automata(self) -> Automata:
+        a = Automata()
+        s = a.add_state(True)
+        a.set_start(s)
+        return a
+
+    def _make_symbol_automata(self, symbol: Symbol) -> Automata:
+        automata = Automata()
+        q0 = automata.add_state(False)
+        q1 = automata.add_state(True)
+        automata.add_transition(q0, q1, symbol.value)
+        automata.set_start(q0)
+        return automata
 
     def _consume(self):
-        self.current_symbol = self.regex_lexer.next_symbol()
+        self.current_symbol = self.peek_symbol
+        self.peek_symbol = self.regex_lexer.next_symbol()
