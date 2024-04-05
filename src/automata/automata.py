@@ -6,9 +6,11 @@ class Automata:
 
     def __init__(self):
         self.states: List[str] = []
+
+        # TODO: tirar esse None e iniciar um automato com um estado
         self.start_state: str | None = None
+
         self.accept_states: List[str] = []
-        self.current_state: str | None = None
         self.transition_function: Dict[Tuple[str, str | None], Set[str]] = {}
 
     def add_state(self, final: bool) -> str:
@@ -55,12 +57,16 @@ class Automata:
         for transition in a1.transition_function.keys():
             start, symbol = transition
             for end in a1.transition_function[transition]:
-                a.add_transition(a1_state_map[start], a1_state_map[end], symbol)
+                a.add_transition(
+                    a1_state_map[start], a1_state_map[end], symbol
+                )
 
         for transition in a2.transition_function.keys():
             start, symbol = transition
             for end in a2.transition_function[transition]:
-                a.add_transition(a2_state_map[start], a2_state_map[end], symbol)
+                a.add_transition(
+                    a2_state_map[start], a2_state_map[end], symbol
+                )
 
         a.add_transition(start_state_union, a1_state_map[a1.start_state], None)
         a.add_transition(start_state_union, a2_state_map[a2.start_state], None)
