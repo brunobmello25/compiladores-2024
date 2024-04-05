@@ -1,69 +1,115 @@
 from src.automata.automata import Automata
+from src.automata.state import State
 
 
-def test_concat_empty_with_symbol():
-    Automata.state_counter = 0
-    empty = Automata()
-    start_state = empty.add_state(True)
-    empty.set_start(start_state)
+def test_init_automata():
+    State.state_counter = 0
+    a = Automata()
+    q0 = a.start_state
 
-    symbol_automata = make_basic_char_automata()
+    assert q0.name == "q0"
 
-    empty.concat(symbol_automata)
+    assert a.states == {q0}
+    assert a.transition_function == {}
+    assert a.accept_states == {q0}
 
-    assert empty.states == ["q0", "q3", "q4"]
-    assert empty.accept_states == ["q4"]
-    assert empty.start_state == "q0"
-    assert empty.transition_function[("q0", None)] == {"q3"}
-    assert empty.transition_function[("q3", "a")] == {"q4"}
-    assert len(empty.transition_function.keys()) == 2
+
+def test_add_state():
+    State.state_counter = 0
+    a1 = Automata()
+    a2 = Automata()
+
+    q0 = a1.start_state
+    q2 = a1.add_state(False)
+    q3 = a1.add_state(False)
+    q4 = a1.add_state(True)
+
+    q1 = a2.start_state
+    q5 = a2.add_state(True)
+    q6 = a2.add_state(False)
+
+    assert q0.name == "q0"
+    assert q1.name == "q1"
+    assert q2.name == "q2"
+    assert q3.name == "q3"
+    assert q4.name == "q4"
+    assert q5.name == "q5"
+    assert q6.name == "q6"
+
+    assert a1.states == {q0, q2, q3, q4}
+    assert a2.states == {q1, q5, q6}
+
+    assert a1.accept_states == {q0, q4}
+    assert a2.accept_states == {q1, q5}
+
+
+def test_add_transition():
+    State.state_counter = 0
+    a = Automata()
+
+    q0 = a.start_state
+    q1 = a.add_state(False)
+    q2 = a.add_state(True)
+
+    a.add_transition(q0, q1, "a")
+    a.add_transition(q1, q2, "1")
+    a.add_transition(q1, q0, "1")
+    a.add_transition(q2, q0, "[A-Z]")
+
+    assert a.transition_function[(q0, "a")] == {q1}
+    assert a.transition_function[(q1, "1")] == {q2, q0}
+    assert a.transition_function[(q2, "[A-Z]")] == {q0}
+
+
+def test_union():
+    State.state_counter = 0
+    a1, q0, q1 = make_basic_char_automata()
+    a2, q2, q3 = make_basic_char_automata("b")
+
+    result = Automata.union(a1, a2)
+    q4 = result.start_state
+
+    assert result.states == {q0, q1, q2, q3, q4}
+    assert result.accept_states == {q1, q3, q4}
+    assert result.transition_function[(q4, None)] == {q0, q2}
+    assert result.transition_function[(q0, "a")] == {q1}
+    assert result.transition_function[(q2, "b")] == {q3}
+    assert len(result.transition_function.keys()) == 3
 
 
 def test_optional():
-    Automata.state_counter = 0
-    a = make_basic_char_automata()
+    State.state_counter = 0
+    a, q0, q1 = make_basic_char_automata()
 
     a.optional()
 
-    assert a.states == ["q0", "q1"]
-    assert a.accept_states == ["q1", "q0"]
-    assert a.start_state == "q0"
-    assert a.transition_function[("q0", "a")] == {"q1"}
+    assert a.states == {q0, q1}
+    assert a.accept_states == {q0, q1}
+    assert a.start_state == q0
+    assert a.transition_function[(q0, "a")] == {q1}
 
 
-def test_plus():
-    Automata.state_counter = 0
-    a = make_basic_char_automata()
+def test_concat_empty_with_symbol():
+    State.state_counter = 0
+    start = Automata()
+    q0 = start.start_state
 
-    a.plus()
+    symbol_automata, q1, q2 = make_basic_char_automata()
 
-    assert a.states == ["q0", "q1"]
-    assert a.start_state == "q0"
-    assert a.accept_states == ["q1"]
-    assert a.transition_function[("q0", "a")] == {"q1"}
-    assert a.transition_function[("q1", None)] == {"q0"}
-    assert len(a.transition_function.keys()) == 2
+    start.concat(symbol_automata)
 
-
-def test_star():
-    Automata.state_counter = 0
-    a = make_basic_char_automata()
-
-    a.star()
-
-    assert a.states == ["q0", "q1"]
-    assert a.start_state == "q0"
-    assert a.accept_states == ["q1", "q0"]
-    assert a.transition_function[("q0", "a")] == {"q1"}
-    assert a.transition_function[("q1", None)] == {"q0"}
-    assert len(a.transition_function.keys()) == 2
+    assert start.states == {q0, q1, q2}
+    assert start.accept_states == {q2}
+    assert start.start_state == q0
+    assert start.transition_function[(q0, None)] == {q1}
+    assert start.transition_function[(q1, "a")] == {q2}
+    assert len(start.transition_function.keys()) == 2
 
 
 def test_concat():
-    # TODO: isso deveria estar em um beforeEach
-    Automata.state_counter = 0
+    State.state_counter = 0
     a1 = Automata()
-    q0 = a1.add_state(False)
+    q0 = a1.accept_states.pop()
     q1 = a1.add_state(False)
     q2 = a1.add_state(True)
     q3 = a1.add_state(False)
@@ -72,118 +118,61 @@ def test_concat():
     a1.add_transition(q1, q2, "a")
     a1.add_transition(q0, q3, None)
     a1.add_transition(q3, q4, "b")
-    a1.set_start(q0)
 
     a2 = Automata()
-    q5 = a2.add_state(False)
+    q5 = a2.accept_states.pop()
     q6 = a2.add_state(True)
     a2.add_transition(q5, q6, "c")
-    a2.set_start(q5)
 
     a1.concat(a2)
 
-    assert a1.states == ["q0", "q1", "q2", "q3", "q4", "q7", "q8"]
-    assert a1.start_state == "q0"
-    assert a1.accept_states == ["q8"]
+    assert a1.states == {q0, q1, q2, q3, q4, q5, q6}
+    assert a1.start_state == q0
+    assert a1.accept_states == {q6}
 
-    assert a1.transition_function[("q0", None)] == {"q1", "q3"}
-    assert a1.transition_function[("q1", "a")] == {"q2"}
-    assert a1.transition_function[("q3", "b")] == {"q4"}
-    assert a1.transition_function[("q2", None)] == {"q7"}
-    assert a1.transition_function[("q4", None)] == {"q7"}
-    assert a1.transition_function[("q7", "c")] == {"q8"}
+    assert a1.transition_function[(q0, None)] == {q1, q3}
+    assert a1.transition_function[(q1, "a")] == {q2}
+    assert a1.transition_function[(q3, "b")] == {q4}
+    assert a1.transition_function[(q2, None)] == {q5}
+    assert a1.transition_function[(q4, None)] == {q5}
+    assert a1.transition_function[(q5, "c")] == {q6}
     assert len(a1.transition_function.keys()) == 6
 
 
-def test_union():
-    Automata.state_counter = 0
-    a1 = make_basic_char_automata()
+def test_plus():
+    State.state_counter = 0
+    a, q0, q1 = make_basic_char_automata()
 
-    a2 = Automata()
-    q2 = a2.add_state(False)
-    q3 = a2.add_state(True)
-    a2.set_start(q2)
-    a2.add_transition(q2, q3, "b")
+    a.plus()
 
-    result = Automata.union(a1, a2)
-
-    assert result.states == ["q4", "q5", "q6", "q7", "q8"]
-    assert result.start_state == "q4"
-    assert result.accept_states == ["q6", "q8"]
-    assert result.transition_function[("q4", None)] == {"q5", "q7"}
-    assert result.transition_function[("q5", "a")] == {"q6"}
-    assert result.transition_function[("q7", "b")] == {"q8"}
-    assert len(result.transition_function.keys()) == 3
+    assert a.states == {q0, q1}
+    assert a.start_state == q0
+    assert a.accept_states == {q1}
+    assert a.transition_function[(q0, "a")] == {q1}
+    assert a.transition_function[(q1, None)] == {q0}
+    assert len(a.transition_function.keys()) == 2
 
 
-def test_set_start():
-    Automata.state_counter = 0
+def test_star():
+    State.state_counter = 0
+    a, q0, q1 = make_basic_char_automata()
+
+    a.star()
+
+    assert a.states == {q0, q1}
+    assert a.start_state == q0
+    assert a.accept_states == {q0, q1}
+    assert a.transition_function[(q0, "a")] == {q1}
+    assert a.transition_function[(q1, None)] == {q0}
+    assert len(a.transition_function.keys()) == 2
+
+
+def make_basic_char_automata(symbol="a") -> (Automata, State, State):
     a = Automata()
-    a.add_state(False)
-    a.add_state(True)
-    a.add_state(False)
 
-    assert a.start_state is None
-    a.set_start("q1")
-    assert a.start_state == "q1"
+    q0 = a.accept_states.pop()
 
-
-def test_init_automata():
-    Automata.state_counter = 0
-    got = Automata()
-
-    assert got.states == []
-    assert got.transition_function == {}
-    assert got.start_state is None
-    assert got.accept_states == []
-
-
-def test_add_state():
-    Automata.state_counter = 0
-    a1 = Automata()
-    a2 = Automata()
-
-    got1 = a1.add_state(False)
-    got2 = a1.add_state(False)
-    got3 = a1.add_state(True)
-    got4 = a2.add_state(True)
-    got5 = a2.add_state(False)
-
-    assert got1 == "q0"
-    assert got2 == "q1"
-    assert got3 == "q2"
-    assert got4 == "q3"
-    assert got5 == "q4"
-
-    assert a1.states == ["q0", "q1", "q2"]
-    assert a1.accept_states == ["q2"]
-
-    assert a2.states == ["q3", "q4"]
-    assert a2.accept_states == ["q3"]
-
-
-def test_add_transition():
-    Automata.state_counter = 0
-    a = Automata()
-    a.add_state(False)
-    a.add_state(True)
-    a.add_state(False)
-
-    a.add_transition("q0", "q1", "a")
-    a.add_transition("q1", "q2", "1")
-    a.add_transition("q1", "q0", "1")
-    a.add_transition("q2", "q0", "[A-Z]")
-
-    assert a.transition_function[("q0", "a")] == {"q1"}
-    assert a.transition_function[("q1", "1")] == {"q2", "q0"}
-    assert a.transition_function[("q2", "[A-Z]")] == {"q0"}
-
-
-def make_basic_char_automata() -> Automata:
-    a = Automata()
-    q0 = a.add_state(False)
     q1 = a.add_state(True)
-    a.set_start(q0)
-    a.add_transition(q0, q1, "a")
+    a.add_transition(q0, q1, symbol)
 
-    return a
+    return a, q0, q1
