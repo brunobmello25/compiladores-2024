@@ -47,6 +47,10 @@ class RegexParser:
             automata.star()
             self._consume()
 
+        if self.current_symbol.type == SymbolType.OPTIONAL:
+            automata.optional()
+            self._consume()
+
         if self.current_symbol.type == SymbolType.PLUS:
             automata.plus()
             self._consume()
