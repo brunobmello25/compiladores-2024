@@ -36,6 +36,9 @@ class RegexParser:
 
         if self.current_symbol.type == SymbolType.CLOSE_PARENTHESIS:
             self._consume()
+            return automata
+
+        if self.current_symbol.type != SymbolType.EOF:
             automata.concat(self.parse())
 
         return automata
