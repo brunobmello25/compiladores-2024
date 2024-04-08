@@ -23,7 +23,8 @@ class RegexLexer:
         if self.input[self.pos] == SymbolType.CLOSE_PARENTHESIS.value:
             self.pos += 1
             return Symbol(
-                SymbolType.CLOSE_PARENTHESIS, SymbolType.CLOSE_PARENTHESIS.value
+                SymbolType.CLOSE_PARENTHESIS,
+                SymbolType.CLOSE_PARENTHESIS.value,
             )
 
         if self.input[self.pos] == SymbolType.OR.value:
@@ -33,6 +34,10 @@ class RegexLexer:
         if self.input[self.pos] == SymbolType.STAR.value:
             self.pos += 1
             return Symbol(SymbolType.STAR, SymbolType.STAR.value)
+
+        if self.input[self.pos] == SymbolType.OPTIONAL.value:
+            self.pos += 1
+            return Symbol(SymbolType.OPTIONAL, SymbolType.OPTIONAL.value)
 
         if self.is_alphabetic_digit(self.input[self.pos]):
             char = self.input[self.pos]

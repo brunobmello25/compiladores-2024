@@ -9,6 +9,7 @@ class SymbolType(Enum):
     STAR = "*"
     PLUS = "+"
     OR = "|"
+    OPTIONAL = "?"
     OPEN_PARENTHESIS = "("
     CLOSE_PARENTHESIS = ")"
     NUMERIC_DIGIT = "DIGIT"
