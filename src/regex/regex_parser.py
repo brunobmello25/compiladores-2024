@@ -38,6 +38,11 @@ class RegexParser:
             self._consume()
             return automata
 
+        if self.current_symbol.type == SymbolType.OR:
+            self._consume()
+            right = self.parse()
+            automata = Automata.union(automata, right)
+
         if self.current_symbol.type != SymbolType.EOF:
             automata.concat(self.parse())
 
