@@ -3,6 +3,26 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_to_dfa():
+    State.state_counter = 0
+    automata = RegexParser(RegexLexer("(a|b)c(d?)")).parse()
+    automata_state_names = {state.name for state in automata.states}
+    automata_accept_state_names = {
+        state.name for state in automata.accept_states
+    }
+
+    # result = automata.to_dfa()
+    # result_state_names = {state.name for state in result.states}
+    # result_accept_state_names = {state.name for state in result.accept_states}
+
+    print("=================")
+    print(automata_state_names)
+    print(automata_accept_state_names)
+    print(automata.start_state.name)
+    print(automata.transitions_as_string())
+    print("=================")
+
+
 def test_optional():
     State.state_counter = 0
     result = RegexParser(RegexLexer("a?")).parse()
