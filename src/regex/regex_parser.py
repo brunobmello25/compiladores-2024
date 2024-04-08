@@ -47,6 +47,9 @@ class RegexParser:
             automata.star()
             self._consume()
 
+        if self.current_symbol.type == SymbolType.PLUS:
+            automata.plus()
+            self._consume()
 
         if self.current_symbol.type != SymbolType.EOF:
             automata.concat(self.parse())

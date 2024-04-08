@@ -3,6 +3,22 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_plus():
+    State.state_counter = 0
+    result = RegexParser(RegexLexer("a+")).parse()
+
+    result_state_names = {state.name for state in result.states}
+    result_accept_state_names = {state.name for state in result.accept_states}
+
+    assert result_state_names == {"q0", "q1", "q2"}
+    assert result_accept_state_names == {"q2"}
+    assert result.start_state.name == "q0"
+    assert result.check_transition_by_state_name("q0", "q1", None)
+    assert result.check_transition_by_state_name("q1", "q2", "a")
+    assert result.check_transition_by_state_name("q2", "q0", None)
+    assert len(result.transition_function.keys()) == 3
+
+
 def test_star():
     State.state_counter = 0
     result = RegexParser(RegexLexer("a*")).parse()
