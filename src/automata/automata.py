@@ -49,6 +49,21 @@ class Automata:
         a.add_transition(q0, q1, symbol)
         return a
 
+    def epsilon_closure(self, state: State) -> Set[State]:
+        stack = [state]
+        closure = {state}
+
+        while len(stack) > 0:
+            current_state = stack.pop()
+
+            if (current_state, None) in self.transition_function:
+                for next_state in self.transition_function[(current_state, None)]:
+                    if next_state not in closure:
+                        closure.add(next_state)
+                        stack.append(next_state)
+
+        return closure
+
     def print(self):
         # Print the start state
         print(f"Start State: {self.start_state.name}")

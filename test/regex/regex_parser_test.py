@@ -3,6 +3,13 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_star_concatenated():
+    State.state_counter = 0
+    result = RegexParser(RegexLexer("ab*c")).parse()
+
+    result.print()
+
+
 def test_shortcut_concatenation():
     State.state_counter = 0
     result = RegexParser(RegexLexer("1[a-z]2")).parse()
