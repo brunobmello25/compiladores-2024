@@ -1,4 +1,3 @@
-from collections import deque
 from typing import Tuple, Dict, Set
 
 from src.automata.state import State
@@ -12,6 +11,43 @@ class Automata:
         self.transition_function: Dict[
             Tuple[State, str | None], Set[State]
         ] = {}
+
+    @staticmethod
+    def make_shortcut_automata(shortchut: str) -> "Automata":
+        a = Automata()
+
+        q0 = a.accept_states.pop()
+
+        q1 = a.add_state(True)
+
+        if shortchut == "[A-z]":
+            for i in range(65, 91):
+                a.add_transition(q0, q1, chr(i))
+            for i in range(97, 123):
+                a.add_transition(q0, q1, chr(i))
+        elif shortchut == "[A-Z]":
+            for i in range(65, 91):
+                a.add_transition(q0, q1, chr(i))
+
+        elif shortchut == "[0-9]":
+            for i in range(48, 58):
+                a.add_transition(q0, q1, chr(i))
+
+        elif shortchut == "[a-z]":
+            for i in range(97, 123):
+                a.add_transition(q0, q1, chr(i))
+
+        return a
+
+    @staticmethod
+    def make_symbol_automata(symbol: str) -> "Automata":
+        a = Automata()
+
+        q0 = a.accept_states.pop()
+
+        q1 = a.add_state(True)
+        a.add_transition(q0, q1, symbol)
+        return a
 
     def print(self):
         # Print the start state

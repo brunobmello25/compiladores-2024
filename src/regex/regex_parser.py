@@ -1,16 +1,6 @@
 from src.automata.automata import Automata
 from src.regex.regex_lexer import RegexLexer
-from src.utils.symbol import Symbol, SymbolType
-
-
-def _make_symbol_automata(symbol: str) -> Automata:
-    a = Automata()
-
-    q0 = a.accept_states.pop()
-
-    q1 = a.add_state(True)
-    a.add_transition(q0, q1, symbol)
-    return a
+from src.utils.symbol import SymbolType
 
 
 class RegexParser:
@@ -26,7 +16,8 @@ class RegexParser:
             return automata
 
         while self.current_symbol.is_content_symbol():
-            new_automata = _make_symbol_automata(self.current_symbol.value)
+            new_automata = Automata.make_symbol_automata(
+                self.current_symbol.value)
             automata.concat(new_automata)
             self._consume()
 
