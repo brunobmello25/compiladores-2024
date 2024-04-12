@@ -10,7 +10,6 @@ def test_shortcut_concatenation():
     result_state_names = {state.name for state in result.states}
     result_accept_state_names = {state.name for state in result.accept_states}
 
-    result.print()
     assert result_state_names == {
         "q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7"}
     assert result_accept_state_names == {"q7"}
