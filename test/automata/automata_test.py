@@ -1,6 +1,46 @@
+import string
 from typing import Tuple
 from src.automata.automata import Automata
 from src.automata.state import State
+
+
+def test_make_shortcut_lower():
+    a = Automata.make_shortcut_automata("[a-z]")
+
+    q0 = a.start_state
+    q1 = a.accept_states.pop()
+
+    for letter in string.ascii_lowercase:
+        assert a.transition_function[(q0, letter)] == {q1}
+
+    assert len(a.transition_function.keys()) == 26
+
+
+def test_make_shortcut_upper():
+    a = Automata.make_shortcut_automata("[A-Z]")
+
+    q0 = a.start_state
+    q1 = a.accept_states.pop()
+
+    for letter in string.ascii_uppercase:
+        assert a.transition_function[(q0, letter)] == {q1}
+
+    assert len(a.transition_function.keys()) == 26
+
+
+def test_make_shortcut_upper_and_lower():
+    a = Automata.make_shortcut_automata("[A-z]")
+
+    q0 = a.start_state
+    q1 = a.accept_states.pop()
+
+    for letter in string.ascii_uppercase:
+        assert a.transition_function[(q0, letter)] == {q1}
+
+    for letter in string.ascii_lowercase:
+        assert a.transition_function[(q0, letter)] == {q1}
+
+    assert len(a.transition_function.keys()) == 52
 
 
 def test_init_automata():

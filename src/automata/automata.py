@@ -12,6 +12,73 @@ class Automata:
             Tuple[State, str | None], Set[State]
         ] = {}
 
+    @staticmethod
+    def make_shortcut_automata(shortchut: str) -> "Automata":
+        a = Automata()
+
+        q0 = a.accept_states.pop()
+
+        q1 = a.add_state(True)
+
+        if shortchut == "[A-z]":
+            for i in range(65, 91):
+                a.add_transition(q0, q1, chr(i))
+            for i in range(97, 123):
+                a.add_transition(q0, q1, chr(i))
+        elif shortchut == "[A-Z]":
+            for i in range(65, 91):
+                a.add_transition(q0, q1, chr(i))
+
+        elif shortchut == "[0-9]":
+            for i in range(48, 58):
+                a.add_transition(q0, q1, chr(i))
+
+        elif shortchut == "[a-z]":
+            for i in range(97, 123):
+                a.add_transition(q0, q1, chr(i))
+
+        return a
+
+    @staticmethod
+    def make_symbol_automata(symbol: str) -> "Automata":
+        a = Automata()
+
+        q0 = a.accept_states.pop()
+
+        q1 = a.add_state(True)
+        a.add_transition(q0, q1, symbol)
+        return a
+
+    def print(self):
+        # Print the start state
+        print(f"Start State: {self.start_state.name}")
+
+        # Print all states
+        print("States:", ", ".join(state.name for state in self.states))
+
+        # Print accept states
+        print(
+            "Accept States:",
+            ", ".join(state.name for state in self.accept_states),
+        )
+
+        # Print the transition function
+        print("Transitions:")
+        for (start, symbol), ends in self.transition_function.items():
+            symbol_display = (
+                symbol if symbol is not None else "ε"
+            )  # ε represents epsilon transitions
+            for end in ends:
+                print(f"  {start.name} --[{symbol_display}]--> {end.name}")
+
+    def transitions_as_string(self) -> Dict[Tuple[str, str | None], Set[str]]:
+        converted_dict = {
+            (state.name, symbol): {s.name for s in state_set}
+            for (state, symbol), state_set in self.transition_function.items()
+        }
+
+        return converted_dict
+
     def add_state(self, final: bool) -> State:
         new_state = State()
 
@@ -74,3 +141,5 @@ class Automata:
     def star(self):
         self.plus()
         self.accept_states.add(self.start_state)
+
+    from collections import deque
