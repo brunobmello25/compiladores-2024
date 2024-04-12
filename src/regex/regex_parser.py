@@ -43,6 +43,18 @@ class RegexParser:
             right = self.parse()
             automata = Automata.union(automata, right)
 
+        if self.current_symbol.type == SymbolType.STAR:
+            automata.star()
+            self._consume()
+
+        if self.current_symbol.type == SymbolType.OPTIONAL:
+            automata.optional()
+            self._consume()
+
+        if self.current_symbol.type == SymbolType.PLUS:
+            automata.plus()
+            self._consume()
+
         if self.current_symbol.type != SymbolType.EOF:
             automata.concat(self.parse())
 

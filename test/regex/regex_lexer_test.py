@@ -3,17 +3,21 @@ from src.utils.symbol import Symbol, SymbolType
 
 
 def test_next_symbol():
-    input = "([A-z]|[A-Z])[0-9]*[a-z]+[xyz]aBCd12"
+    input = "([A-z]|[A-Z])[0-9]?*[a-z]+?[xyz]aBCd12"
     expected_symbols = [
         Symbol(SymbolType.OPEN_PARENTHESIS, SymbolType.OPEN_PARENTHESIS.value),
         Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
         Symbol(SymbolType.OR, SymbolType.OR.value),
         Symbol(SymbolType.UPPER, SymbolType.UPPER.value),
-        Symbol(SymbolType.CLOSE_PARENTHESIS, SymbolType.CLOSE_PARENTHESIS.value),
+        Symbol(
+            SymbolType.CLOSE_PARENTHESIS, SymbolType.CLOSE_PARENTHESIS.value
+        ),
         Symbol(SymbolType.NUMBER, SymbolType.NUMBER.value),
+        Symbol(SymbolType.OPTIONAL, SymbolType.OPTIONAL.value),
         Symbol(SymbolType.STAR, SymbolType.STAR.value),
         Symbol(SymbolType.LOWER, SymbolType.LOWER.value),
         Symbol(SymbolType.PLUS, SymbolType.PLUS.value),
+        Symbol(SymbolType.OPTIONAL, SymbolType.OPTIONAL.value),
         Symbol(SymbolType.ILLEGAL, "[xyz]"),
         Symbol(SymbolType.LETTER, "a"),
         Symbol(SymbolType.LETTER, "B"),
@@ -45,7 +49,10 @@ def test_regex_shortcut():
             "input": "[a-z]",
             "expected": Symbol(SymbolType.LOWER, SymbolType.LOWER.value),
         },
-        {"input": "[A-z]", "expected": Symbol(SymbolType.TEXT, SymbolType.TEXT.value)},
+        {
+            "input": "[A-z]",
+            "expected": Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
+        },
         {
             "input": "[0-9]",
             "expected": Symbol(SymbolType.NUMBER, SymbolType.NUMBER.value),

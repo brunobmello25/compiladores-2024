@@ -3,6 +3,53 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_optional():
+    State.state_counter = 0
+    result = RegexParser(RegexLexer("a?")).parse()
+
+    result_state_names = {state.name for state in result.states}
+    result_accept_state_names = {state.name for state in result.accept_states}
+
+    assert result_state_names == {"q0", "q1", "q2"}
+    assert result_accept_state_names == {"q0", "q2"}
+    assert result.start_state.name == "q0"
+    assert result.check_transition_by_state_name("q0", "q1", None)
+    assert result.check_transition_by_state_name("q1", "q2", "a")
+    assert len(result.transition_function.keys()) == 2
+
+
+def test_plus():
+    State.state_counter = 0
+    result = RegexParser(RegexLexer("a+")).parse()
+
+    result_state_names = {state.name for state in result.states}
+    result_accept_state_names = {state.name for state in result.accept_states}
+
+    assert result_state_names == {"q0", "q1", "q2"}
+    assert result_accept_state_names == {"q2"}
+    assert result.start_state.name == "q0"
+    assert result.check_transition_by_state_name("q0", "q1", None)
+    assert result.check_transition_by_state_name("q1", "q2", "a")
+    assert result.check_transition_by_state_name("q2", "q0", None)
+    assert len(result.transition_function.keys()) == 3
+
+
+def test_star():
+    State.state_counter = 0
+    result = RegexParser(RegexLexer("a*")).parse()
+
+    result_state_names = {state.name for state in result.states}
+    result_accept_state_names = {state.name for state in result.accept_states}
+
+    assert result_state_names == {"q0", "q1", "q2"}
+    assert result_accept_state_names == {"q0", "q2"}
+    assert result.start_state.name == "q0"
+    assert result.check_transition_by_state_name("q0", "q1", None)
+    assert result.check_transition_by_state_name("q1", "q2", "a")
+    assert result.check_transition_by_state_name("q2", "q0", None)
+    assert len(result.transition_function.keys()) == 3
+
+
 def test_union_2():
     State.state_counter = 0
     result = RegexParser(RegexLexer("(a|b)c")).parse()
@@ -10,7 +57,19 @@ def test_union_2():
     result_state_names = {state.name for state in result.states}
     result_accept_state_names = {state.name for state in result.accept_states}
 
-    assert result_state_names == {"q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"}
+    assert result_state_names == {
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+        "q8",
+        "q9",
+        "q10",
+    }
     assert result_accept_state_names == {"q10"}
     assert result.start_state.name == "q0"
     assert result.check_transition_by_state_name("q0", "q7", None)
@@ -33,7 +92,19 @@ def test_union_1():
     result_states_names = {state.name for state in result.states}
     result_accept_state_names = {state.name for state in result.accept_states}
 
-    assert result_states_names == {"q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"}
+    assert result_states_names == {
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+        "q8",
+        "q9",
+        "q10",
+    }
     assert result_accept_state_names == {"q4", "q9"}
     assert result.start_state.name == "q10"
 
@@ -82,7 +153,16 @@ def test_parse_parenthesis_regex():
     result_accept_states_names = {state.name for state in result.accept_states}
 
     assert len(result.states) == 8
-    assert result_states_names == {"q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7"}
+    assert result_states_names == {
+        "q0",
+        "q1",
+        "q2",
+        "q3",
+        "q4",
+        "q5",
+        "q6",
+        "q7",
+    }
     assert result.start_state.name == "q0"
     assert result_accept_states_names == {"q7"}
     assert result.check_transition_by_state_name("q0", "q1", None)
