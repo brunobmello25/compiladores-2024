@@ -25,10 +25,14 @@ class Symbol:
 
     def is_content_symbol(self):
         return self.type in [
+            SymbolType.NUMERIC_DIGIT,
+            SymbolType.LETTER,
+        ]
+
+    def is_shortcut_symbol(self):
+        return self.type in [
             SymbolType.UPPER,
             SymbolType.LOWER,
             SymbolType.TEXT,
             SymbolType.NUMBER,
-            SymbolType.NUMERIC_DIGIT,
-            SymbolType.LETTER,
         ]

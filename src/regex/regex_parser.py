@@ -21,6 +21,12 @@ class RegexParser:
             automata.concat(new_automata)
             self._consume()
 
+        while self.current_symbol.is_shortcut_symbol():
+            new_automata = Automata.make_shortcut_automata(
+                self.current_symbol.value)
+            automata.concat(new_automata)
+            self._consume()
+
         if self.current_symbol.type == SymbolType.OPEN_PARENTHESIS:
             self._consume()
             automata.concat(self.parse())
