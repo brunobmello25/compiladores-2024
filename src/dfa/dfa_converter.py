@@ -4,7 +4,7 @@ from src.automata.automata import Automata
 from src.automata.state import State
 
 
-class DFA:
+class DFAConverter:
     def __init__(self, nfa: Automata):
         self.nfa = nfa
         self.states = set()
