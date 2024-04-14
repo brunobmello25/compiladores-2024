@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, Set
 
 from src.automata.state import State
+from src.utils.symbol import Symbol
 
 
 class Automata:
@@ -13,29 +14,15 @@ class Automata:
         ] = {}
 
     @staticmethod
-    def make_shortcut_automata(shortchut: str) -> "Automata":
+    def make_shortcut_automata(shortcut: Symbol) -> "Automata":
         a = Automata()
 
         q0 = a.accept_states.pop()
 
         q1 = a.add_state(True)
 
-        if shortchut == "[A-z]":
-            for i in range(65, 91):
-                a.add_transition(q0, q1, chr(i))
-            for i in range(97, 123):
-                a.add_transition(q0, q1, chr(i))
-        elif shortchut == "[A-Z]":
-            for i in range(65, 91):
-                a.add_transition(q0, q1, chr(i))
-
-        elif shortchut == "[0-9]":
-            for i in range(48, 58):
-                a.add_transition(q0, q1, chr(i))
-
-        elif shortchut == "[a-z]":
-            for i in range(97, 123):
-                a.add_transition(q0, q1, chr(i))
+        for ch in shortcut.shortcut_to_list():
+            a.add_transition(q0, q1, ch)
 
         return a
 
