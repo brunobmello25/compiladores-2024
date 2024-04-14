@@ -49,19 +49,17 @@ class Automata:
         a.add_transition(q0, q1, symbol)
         return a
 
-    def epsilon_closure(self, state: State) -> Set[State]:
-        stack = [state]
-        closure = {state}
-
-        while len(stack) > 0:
-            current_state = stack.pop()
-
-            if (current_state, None) in self.transition_function:
-                for next_state in self.transition_function[(current_state, None)]:
-                    if next_state not in closure:
-                        closure.add(next_state)
-                        stack.append(next_state)
-
+    def epsilon_closure(self, state: State):
+        closure = set([state])
+        queue = [state]
+        while queue:
+            current = queue.pop(0)
+            # Pegar todos os estados alcançáveis por ε-transições
+            next_states = self.transition_function.get((current, None), [])
+            for next_state in next_states:
+                if next_state not in closure:
+                    closure.add(next_state)
+                    queue.append(next_state)
         return closure
 
     def print(self):

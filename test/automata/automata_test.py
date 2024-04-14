@@ -9,6 +9,18 @@ from src.regex.regex_parser import RegexParser
 def test_epsilon_closure():
     a = RegexParser(RegexLexer("(a|b)")).parse()
 
+    def closure(name: str):
+        state = [state for state in a.states if state.name == name][0]
+        closure = {state.name for state in a.epsilon_closure(state)}
+        return closure
+
+    assert closure("q0") == {"q0", "q1", "q2", "q4", "q5", "q7"}
+    assert closure("q7") == {"q7", "q1", "q2", "q4", "q5"}
+    assert closure("q1") == {"q1", "q2"}
+    assert closure("q4") == {"q4", "q5"}
+    assert closure("q2") == {"q2"}
+    assert closure("q5") == {"q5"}
+
 
 def test_make_shortcut_lower():
     a = Automata.make_shortcut_automata("[a-z]")
