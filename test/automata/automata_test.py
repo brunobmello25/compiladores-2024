@@ -8,12 +8,14 @@ from src.utils.symbol import Symbol, SymbolType
 
 
 def test_symbol_set():
+    State.state_counter = 0
     a = RegexParser(RegexLexer("a|b?c+d*")).parse()
 
     assert a.symbol_set() == {"a", "b", "c", "d"}
 
 
 def test_epsilon_closure():
+    State.state_counter = 0
     a = RegexParser(RegexLexer("(a|b)")).parse()
 
     def closure(name: str):
@@ -30,6 +32,8 @@ def test_epsilon_closure():
 
 
 def test_make_shortcut_lower():
+    State.state_counter = 0
+
     symbol = Symbol(SymbolType.LOWER, SymbolType.LOWER.value)
     a = Automata.make_shortcut_automata(symbol)
 
@@ -43,6 +47,8 @@ def test_make_shortcut_lower():
 
 
 def test_make_shortcut_upper():
+    State.state_counter = 0
+
     symbol = Symbol(SymbolType.UPPER, SymbolType.UPPER.value)
     a = Automata.make_shortcut_automata(symbol)
 
@@ -56,6 +62,8 @@ def test_make_shortcut_upper():
 
 
 def test_make_shortcut_upper_and_lower():
+    State.state_counter = 0
+
     symbol = Symbol(SymbolType.TEXT, SymbolType.TEXT.value)
     a = Automata.make_shortcut_automata(symbol)
 
