@@ -11,19 +11,13 @@ class DFA:
         self.accept_states = accept_states
 
     def print(self):
-        # Print the start state
         print(f"Start State: {self.start_state.name}")
 
-        # Print all states
         print("States:", ", ".join(state.name for state in self.states))
 
-        # Print accept states
-        print(
-            "Accept States:",
-            ", ".join(state.name for state in self.accept_states),
-        )
+        print("Accept States:", ", ".join(
+            state.name for state in self.accept_states))
 
-        # Print the transition function
         print("Transitions:")
         for (start, symbol), end in self.transition_function.items():
             symbol_display = (
