@@ -7,6 +7,12 @@ from src.regex.regex_parser import RegexParser
 from src.utils.symbol import Symbol, SymbolType
 
 
+def test_symbol_set():
+    a = RegexParser(RegexLexer("a|b?c+d*")).parse()
+
+    assert a.symbol_set() == {"a", "b", "c", "d"}
+
+
 def test_epsilon_closure():
     a = RegexParser(RegexLexer("(a|b)")).parse()
 

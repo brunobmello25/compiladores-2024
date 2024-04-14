@@ -13,6 +13,11 @@ class Automata:
             Tuple[State, str | None], Set[State]
         ] = {}
 
+    def symbol_set(self):
+        return {
+            symbol for (_, symbol) in self.transition_function.keys() if symbol
+        }
+
     @staticmethod
     def make_shortcut_automata(shortcut: Symbol) -> "Automata":
         a = Automata()
