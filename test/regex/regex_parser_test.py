@@ -5,9 +5,30 @@ from src.regex.regex_parser import RegexParser
 
 def test_star_concatenated():
     State.state_counter = 0
-    result = RegexParser(RegexLexer("ab*c")).parse()
+    result = RegexParser(RegexLexer("ab*c?d+e")).parse()
 
-    result.print()
+    result_state_names = {state.name for state in result.states}
+    result_accept_state_names = {state.name for state in result.accept_states}
+
+    assert result_state_names == {
+        "q0", "q1", "q2", "q3", "q4", "q5", "q6", "q7", "q8", "q9", "q10"
+    }
+    assert result_accept_state_names == {"q10"}
+    assert result.start_state.name == "q0"
+    assert result.check_transition_by_state_name("q0", "q1", None)
+    assert result.check_transition_by_state_name("q1", "q2", "a")
+    assert result.check_transition_by_state_name("q2", "q3", None)
+    assert result.check_transition_by_state_name("q3", "q4", "b")
+    assert result.check_transition_by_state_name("q3", "q5", None)
+    assert result.check_transition_by_state_name("q4", "q3", None)
+    assert result.check_transition_by_state_name("q4", "q5", None)
+    assert result.check_transition_by_state_name("q5", "q6", "c")
+    assert result.check_transition_by_state_name("q5", "q7", None)
+    assert result.check_transition_by_state_name("q6", "q7", None)
+    assert result.check_transition_by_state_name("q7", "q8", "d")
+    assert result.check_transition_by_state_name("q8", "q7", None)
+    assert result.check_transition_by_state_name("q8", "q9", None)
+    assert result.check_transition_by_state_name("q9", "q10", "e")
 
 
 def test_shortcut_concatenation():
@@ -65,7 +86,7 @@ def test_optional():
     result_accept_state_names = {state.name for state in result.accept_states}
 
     assert result_state_names == {"q0", "q1", "q2"}
-    assert result_accept_state_names == {"q0", "q2"}
+    assert result_accept_state_names == {"q1", "q2"}
     assert result.start_state.name == "q0"
     assert result.check_transition_by_state_name("q0", "q1", None)
     assert result.check_transition_by_state_name("q1", "q2", "a")
@@ -84,7 +105,7 @@ def test_plus():
     assert result.start_state.name == "q0"
     assert result.check_transition_by_state_name("q0", "q1", None)
     assert result.check_transition_by_state_name("q1", "q2", "a")
-    assert result.check_transition_by_state_name("q2", "q0", None)
+    assert result.check_transition_by_state_name("q2", "q1", None)
     assert len(result.transition_function.keys()) == 3
 
 
@@ -96,11 +117,11 @@ def test_star():
     result_accept_state_names = {state.name for state in result.accept_states}
 
     assert result_state_names == {"q0", "q1", "q2"}
-    assert result_accept_state_names == {"q0", "q2"}
+    assert result_accept_state_names == {"q1", "q2"}
     assert result.start_state.name == "q0"
     assert result.check_transition_by_state_name("q0", "q1", None)
     assert result.check_transition_by_state_name("q1", "q2", "a")
-    assert result.check_transition_by_state_name("q2", "q0", None)
+    assert result.check_transition_by_state_name("q2", "q1", None)
     assert len(result.transition_function.keys()) == 3
 
 

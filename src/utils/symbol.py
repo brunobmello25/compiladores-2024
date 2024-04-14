@@ -29,6 +29,13 @@ class Symbol:
             SymbolType.LETTER,
         ]
 
+    def is_postfix_operator(self):
+        return self.type in [
+            SymbolType.STAR,
+            SymbolType.PLUS,
+            SymbolType.OPTIONAL,
+        ]
+
     def is_shortcut_symbol(self):
         return self.type in [
             SymbolType.UPPER,
