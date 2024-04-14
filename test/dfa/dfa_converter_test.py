@@ -4,11 +4,16 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
-def test_build_from_nfa():
+def test_dfa_acception():
     State.state_counter = 0
-    nfa = RegexParser(RegexLexer("(a|b)")).parse()
+    nfa = RegexParser(RegexLexer("ab*c?d+e")).parse()
+    dfa = DFAConverter(nfa).get_dfa()
 
-    dfa = DFAConverter(nfa)
-
-    print()
-    dfa.print()
+    # TODO: add more assertions here
+    assert dfa.check("abdde")
+    assert dfa.check("abde")
+    assert dfa.check("acde")
+    assert dfa.check("acdde")
+    assert not dfa.check("")
+    assert not dfa.check("ab")
+    assert not dfa.check("abdd")
