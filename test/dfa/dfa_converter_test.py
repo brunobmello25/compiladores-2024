@@ -6,29 +6,53 @@ from src.regex.regex_parser import RegexParser
 
 def test_dfa_acception():
     State.state_counter = 0
-    nfa = RegexParser(RegexLexer("ab*c?d+e")).parse()
-    dfa = DFAConverter(nfa).get_dfa()
 
-    assert dfa.check("abdde")
-    assert dfa.check("abde")
-    assert dfa.check("acde")
-    assert dfa.check("acdde")
-    assert dfa.check("ade")
-    assert dfa.check("abbde")
-    assert dfa.check("abbbde")
-    assert dfa.check("abcde")
-    assert dfa.check("abcdde")
-    assert dfa.check("abbcdddde")
+    def run(regex: str, expect: bool, input: str):
+        nfa = RegexParser(RegexLexer(regex)).parse()
+        dfa = DFAConverter(nfa).get_dfa()
 
-    assert not dfa.check("abce")
-    assert not dfa.check("abc")
-    assert not dfa.check("abce")
-    assert not dfa.check("bacde")
-    assert not dfa.check("abdcde")
-    assert not dfa.check("adebde")
-    assert not dfa.check("abdede")
-    assert not dfa.check("aed")
-    assert not dfa.check("ab*cd+e")
-    assert not dfa.check("")
-    assert not dfa.check("ab")
-    assert not dfa.check("abdd")
+        if expect:
+            assert dfa.check(input)
+        else:
+            assert not dfa.check(input)
+
+    reg = "ab*c?d+e"
+    run(reg, True, "abdde")
+    run(reg, True, "abde")
+    run(reg, True, "acde")
+    run(reg, True, "acdde")
+    run(reg, True, "ade")
+    run(reg, True, "abbde")
+    run(reg, True, "abbbde")
+    run(reg, True, "abcde")
+    run(reg, True, "abcdde")
+    run(reg, True, "abbcdddde")
+    run(reg, False, "abce")
+    run(reg, False, "abc")
+    run(reg, False, "abce")
+    run(reg, False, "bacde")
+    run(reg, False, "abdcde")
+    run(reg, False, "adebde")
+    run(reg, False, "abdede")
+    run(reg, False, "aed")
+    run(reg, False, "ab*cd+e")
+    run(reg, False, "")
+    run(reg, False, "ab")
+    run(reg, False, "abdd")
+
+    # int test
+    reg = "int"
+    run(reg, True, "int")
+    run(reg, False, "in")
+    run(reg, False, "i")
+    run(reg, False, "nt")
+    run(reg, False, "t")
+    run(reg, False, "n")
+
+    # identifier
+    reg = "[A-z]([A-z]|[0-9])*"
+    run(reg, True, "a")
+    run(reg, True, "abcd")
+    run(reg, True, "ab1234fdsfasdhuisad")
+    run(reg, False, "123")
+    run(reg, False, "123abc")
