@@ -2,6 +2,12 @@ import string
 from typing import Tuple
 from src.automata.automata import Automata
 from src.automata.state import State
+from src.regex.regex_lexer import RegexLexer
+from src.regex.regex_parser import RegexParser
+
+
+def test_epsilon_closure():
+    a = RegexParser(RegexLexer("(a|b)")).parse()
 
 
 def test_make_shortcut_lower():

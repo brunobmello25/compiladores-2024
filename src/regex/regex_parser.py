@@ -18,6 +18,11 @@ class RegexParser:
         while self.current_symbol.is_content_symbol():
             new_automata = Automata.make_symbol_automata(
                 self.current_symbol.value)
+
+            if self.peek_symbol.is_postfix_operator():
+                self._process_postfix_symbol(new_automata)
+                self._consume()
+
             automata.concat(new_automata)
             self._consume()
 
@@ -56,6 +61,17 @@ class RegexParser:
             automata.concat(self.parse())
 
         return automata
+
+    def _process_postfix_symbol(self, automata: Automata):
+        if self.peek_symbol.type == SymbolType.STAR:
+            automata.star()
+        elif self.peek_symbol.type == SymbolType.PLUS:
+            automata.plus()
+        elif self.peek_symbol.type == SymbolType.OPTIONAL:
+            automata.optional()
+        else:
+            raise ValueError(
+                "Invalid postfix symbol: {}".format(self.peek_symbol))
 
     def _consume(self):
         self.current_symbol = self.peek_symbol
