@@ -43,3 +43,17 @@ class Symbol:
             SymbolType.TEXT,
             SymbolType.NUMBER,
         ]
+
+    def shortcut_to_list(self):
+        if self.type == SymbolType.UPPER:
+            return [chr(i) for i in range(65, 91)]
+        elif self.type == SymbolType.LOWER:
+            return [chr(i) for i in range(97, 123)]
+        elif self.type == SymbolType.TEXT:
+            return [chr(i) for i in range(65, 91)] + [
+                chr(i) for i in range(97, 123)
+            ]
+        elif self.type == SymbolType.NUMBER:
+            return [chr(i) for i in range(48, 58)]
+        else:
+            raise Exception("{} is not a shortcut symbol".format(self.type))

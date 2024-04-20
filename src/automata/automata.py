@@ -1,6 +1,7 @@
 from typing import Tuple, Dict, Set
 
 from src.automata.state import State
+from src.utils.symbol import Symbol
 
 
 class Automata:
@@ -12,30 +13,21 @@ class Automata:
             Tuple[State, str | None], Set[State]
         ] = {}
 
+    def symbol_set(self):
+        return {
+            symbol for (_, symbol) in self.transition_function.keys() if symbol
+        }
+
     @staticmethod
-    def make_shortcut_automata(shortchut: str) -> "Automata":
+    def make_shortcut_automata(shortcut: Symbol) -> "Automata":
         a = Automata()
 
         q0 = a.accept_states.pop()
 
         q1 = a.add_state(True)
 
-        if shortchut == "[A-z]":
-            for i in range(65, 91):
-                a.add_transition(q0, q1, chr(i))
-            for i in range(97, 123):
-                a.add_transition(q0, q1, chr(i))
-        elif shortchut == "[A-Z]":
-            for i in range(65, 91):
-                a.add_transition(q0, q1, chr(i))
-
-        elif shortchut == "[0-9]":
-            for i in range(48, 58):
-                a.add_transition(q0, q1, chr(i))
-
-        elif shortchut == "[a-z]":
-            for i in range(97, 123):
-                a.add_transition(q0, q1, chr(i))
+        for ch in shortcut.shortcut_to_list():
+            a.add_transition(q0, q1, ch)
 
         return a
 
@@ -49,19 +41,17 @@ class Automata:
         a.add_transition(q0, q1, symbol)
         return a
 
-    def epsilon_closure(self, state: State) -> Set[State]:
-        stack = [state]
-        closure = {state}
-
-        while len(stack) > 0:
-            current_state = stack.pop()
-
-            if (current_state, None) in self.transition_function:
-                for next_state in self.transition_function[(current_state, None)]:
-                    if next_state not in closure:
-                        closure.add(next_state)
-                        stack.append(next_state)
-
+    def epsilon_closure(self, state: State):
+        closure = set([state])
+        queue = [state]
+        while queue:
+            current = queue.pop(0)
+            # Pegar todos os estados alcançáveis por ε-transições
+            next_states = self.transition_function.get((current, None), [])
+            for next_state in next_states:
+                if next_state not in closure:
+                    closure.add(next_state)
+                    queue.append(next_state)
         return closure
 
     def print(self):

@@ -6,7 +6,6 @@ class RegexLexer:
         self.pos = 0
         self.input = input
 
-    # TODO: deve retornar ILLEGAL pra caso de simbolo inválido
     def next_symbol(self) -> Symbol:
         if self.pos >= len(self.input):
             return Symbol(SymbolType.EOF, SymbolType.EOF.value)
@@ -62,7 +61,7 @@ class RegexLexer:
         return len(c) == 1 and c.isdigit()
 
     def _handle_regex_shortcut(self) -> Symbol:
-        inner_content = self.input[self.pos + 1 : self.pos + 4]
+        inner_content = self.input[self.pos + 1: self.pos + 4]
 
         self.pos += 5
 

@@ -4,14 +4,38 @@ from src.automata.automata import Automata
 from src.automata.state import State
 from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
+from src.utils.symbol import Symbol, SymbolType
+
+
+def test_symbol_set():
+    State.state_counter = 0
+    a = RegexParser(RegexLexer("a|b?c+d*")).parse()
+
+    assert a.symbol_set() == {"a", "b", "c", "d"}
 
 
 def test_epsilon_closure():
+    State.state_counter = 0
     a = RegexParser(RegexLexer("(a|b)")).parse()
+
+    def closure(name: str):
+        state = [state for state in a.states if state.name == name][0]
+        closure = {state.name for state in a.epsilon_closure(state)}
+        return closure
+
+    assert closure("q0") == {"q0", "q1", "q2", "q4", "q5", "q7"}
+    assert closure("q7") == {"q7", "q1", "q2", "q4", "q5"}
+    assert closure("q1") == {"q1", "q2"}
+    assert closure("q4") == {"q4", "q5"}
+    assert closure("q2") == {"q2"}
+    assert closure("q5") == {"q5"}
 
 
 def test_make_shortcut_lower():
-    a = Automata.make_shortcut_automata("[a-z]")
+    State.state_counter = 0
+
+    symbol = Symbol(SymbolType.LOWER, SymbolType.LOWER.value)
+    a = Automata.make_shortcut_automata(symbol)
 
     q0 = a.start_state
     q1 = a.accept_states.pop()
@@ -23,7 +47,10 @@ def test_make_shortcut_lower():
 
 
 def test_make_shortcut_upper():
-    a = Automata.make_shortcut_automata("[A-Z]")
+    State.state_counter = 0
+
+    symbol = Symbol(SymbolType.UPPER, SymbolType.UPPER.value)
+    a = Automata.make_shortcut_automata(symbol)
 
     q0 = a.start_state
     q1 = a.accept_states.pop()
@@ -35,7 +62,10 @@ def test_make_shortcut_upper():
 
 
 def test_make_shortcut_upper_and_lower():
-    a = Automata.make_shortcut_automata("[A-z]")
+    State.state_counter = 0
+
+    symbol = Symbol(SymbolType.TEXT, SymbolType.TEXT.value)
+    a = Automata.make_shortcut_automata(symbol)
 
     q0 = a.start_state
     q1 = a.accept_states.pop()
