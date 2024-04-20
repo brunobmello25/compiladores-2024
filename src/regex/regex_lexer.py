@@ -10,6 +10,22 @@ class RegexLexer:
         if self.pos >= len(self.input):
             return Symbol(SymbolType.EOF, SymbolType.EOF.value)
 
+        if self.input[self.pos] == "!":
+            self.pos += 1
+            return Symbol(SymbolType.EXCLAMATION, SymbolType.EXCLAMATION.value)
+
+        if self.input[self.pos] == ";":
+            self.pos += 1
+            return Symbol(SymbolType.SEMICOLON, SymbolType.SEMICOLON.value)
+
+        if self.input[self.pos] == "=":
+            self.pos += 1
+            return Symbol(SymbolType.EQUAL, SymbolType.EQUAL.value)
+
+        if self.input[self.pos] == "|":
+            self.pos += 1
+            return Symbol(SymbolType.PIPE, SymbolType.PIPE.value)
+
         if self.input[self.pos] == "[":
             return self._handle_regex_shortcut()
 

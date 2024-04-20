@@ -15,6 +15,10 @@ class SymbolType(Enum):
     NUMERIC_DIGIT = "DIGIT"
     LETTER = "LETTER"
     EOF = "EOF"
+    EQUAL = "="
+    EXCLAMATION = "!"
+    SEMICOLON = ";"
+    PIPE = "|"
     ILLEGAL = "ILLEGAL"
 
 
