@@ -46,6 +46,10 @@ class DFA:
         self.alphabet = new_alphabet
         self.states.add(new_state)
 
+    def associate_token(self, token: str):
+        for state in self.accept_states:
+            state.token_type = token
+
     def check(self, word: str) -> bool:
         current_state = self.start_state
 

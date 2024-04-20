@@ -1,9 +1,27 @@
 from typing import Dict, Tuple
 from src.automata.state import State
 from src.dfa.dfa import DFA
+from src.dfa.dfa_converter import DFAConverter
+from src.regex.regex_lexer import RegexLexer
+from src.regex.regex_parser import RegexParser
+
+
+def test_associate_token():
+    State.state_counter = 0
+
+    nfa = RegexParser(RegexLexer("int")).parse()
+    dfa = DFAConverter(nfa).get_dfa()
+    dfa.associate_token("int")
+
+    for state in dfa.accept_states:
+        assert state.token_type == "int"
+    for state in {state for state in dfa.states if state not in dfa.accept_states}:
+        assert state.token_type is None
 
 
 def test_extend_alphabet():
+    State.state_counter = 0
+
     q0 = State()
     q1 = State()
     q2 = State()
