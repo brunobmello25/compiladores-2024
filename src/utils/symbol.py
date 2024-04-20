@@ -31,6 +31,9 @@ class Symbol:
         return self.type in [
             SymbolType.NUMERIC_DIGIT,
             SymbolType.LETTER,
+            SymbolType.EQUAL,
+            SymbolType.EXCLAMATION,
+            SymbolType.SEMICOLON,
         ]
 
     def is_postfix_operator(self):

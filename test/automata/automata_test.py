@@ -7,6 +7,34 @@ from src.regex.regex_parser import RegexParser
 from src.utils.symbol import Symbol, SymbolType
 
 
+def test_special_symbols():
+    State.state_counter = 0
+
+    a = RegexParser(RegexLexer("!=;!;==")).parse()
+
+    state_names = {state.name for state in a.states}
+    accept_state_names = {state.name for state in a.accept_states}
+
+    assert state_names == {"q0", "q1", "q2", "q3", "q4", "q5",
+                           "q6", "q7", "q8", "q9", "q10", "q11", "q12", "q13", "q14"}
+    assert accept_state_names == {"q14"}
+    assert a.start_state.name == "q0"
+    assert a.check_transition_by_state_name("q0", "q1", None)
+    assert a.check_transition_by_state_name("q1", "q2", "!")
+    assert a.check_transition_by_state_name("q2", "q3", None)
+    assert a.check_transition_by_state_name("q3", "q4", "=")
+    assert a.check_transition_by_state_name("q4", "q5", None)
+    assert a.check_transition_by_state_name("q5", "q6", ";")
+    assert a.check_transition_by_state_name("q6", "q7", None)
+    assert a.check_transition_by_state_name("q7", "q8", "!")
+    assert a.check_transition_by_state_name("q8", "q9", None)
+    assert a.check_transition_by_state_name("q9", "q10", ";")
+    assert a.check_transition_by_state_name("q10", "q11", None)
+    assert a.check_transition_by_state_name("q11", "q12", "=")
+    assert a.check_transition_by_state_name("q12", "q13", None)
+    assert a.check_transition_by_state_name("q13", "q14", "=")
+
+
 def test_symbol_set():
     State.state_counter = 0
     a = RegexParser(RegexLexer("a|b?c+d*")).parse()
