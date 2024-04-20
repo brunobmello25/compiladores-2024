@@ -27,7 +27,12 @@ class DFAConverter:
         new_transition_function = {
             (equivalences[start], symbol): equivalences[end] for (start, symbol), end in self.transition_function.items()
         }
-        return DFA(new_start, new_states, new_transition_function, new_accept_states)
+
+        new_alphabet = {
+            symbol for (_, symbol) in self.transition_function.keys() if symbol is not None
+        }
+
+        return DFA(new_start, new_states, new_transition_function, new_accept_states, new_alphabet)
 
     def _epsilon_closure(self, states: FrozenSet[State]) -> FrozenSet[State]:
         closure = set()
