@@ -1,0 +1,3 @@
+# TODO:
+
+- [ ] adicionar simbolos (=, ==, !=, ;)

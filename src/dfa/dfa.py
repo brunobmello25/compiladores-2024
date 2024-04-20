@@ -1,6 +1,7 @@
 
 from typing import Dict, Set, Tuple
 from src.automata.state import State
+from src.scanner.token_priority import TokenPriority
 
 
 class DFA:
@@ -46,16 +47,21 @@ class DFA:
         self.alphabet = new_alphabet
         self.states.add(new_state)
 
-    def associate_token(self, token: str):
+    def associate_token(self, token: str, priority: TokenPriority = TokenPriority.LOW):
         for state in self.accept_states:
             state.token_type = token
+            state.token_priority = priority
 
     def check(self, word: str) -> bool:
+        accepts, _ = self.check_final_state(word)
+        return accepts
+
+    def check_final_state(self, word: str) -> Tuple[bool, State]:
         current_state = self.start_state
 
         for symbol in word:
             if (current_state, symbol) not in self.transition_function:
-                return False
+                return False, current_state
             current_state = self.transition_function[(current_state, symbol)]
 
-        return current_state in self.accept_states
+        return current_state in self.accept_states, current_state
