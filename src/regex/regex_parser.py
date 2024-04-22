@@ -32,18 +32,22 @@ class RegexParser:
             automata.concat(new_automata)
             self._consume()
 
+        while self.current_symbol.type == SymbolType.OR:
+            self._consume()
+            right = self.parse()
+            automata = Automata.union(automata, right)
+
         if self.current_symbol.type == SymbolType.OPEN_PARENTHESIS:
+            if self.peek_symbol.is_postfix_operator():
+                self._process_postfix_symbol(automata)
+                self._consume()
+
             self._consume()
             automata.concat(self.parse())
 
         if self.current_symbol.type == SymbolType.CLOSE_PARENTHESIS:
             self._consume()
             return automata
-
-        if self.current_symbol.type == SymbolType.OR:
-            self._consume()
-            right = self.parse()
-            automata = Automata.union(automata, right)
 
         if self.current_symbol.type == SymbolType.STAR:
             automata.star()
