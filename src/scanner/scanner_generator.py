@@ -5,6 +5,7 @@ from src.dfa.dfa_converter import DFAConverter
 from src.dfa.dfa_merger import DFAMerger
 from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
+from src.scanner.scanner import Scanner
 from src.scanner.token_priority import TokenPriority
 
 
@@ -22,7 +23,7 @@ class ScannerGenerator:
 
         return self
 
-    def generate_scanner(self) -> DFA:
+    def generate_scanner(self) -> Scanner:
         if len(self.automatas) == 0:
             raise Exception("No tokens added to the scanner")
 
@@ -31,4 +32,4 @@ class ScannerGenerator:
         for dfa in self.automatas[1:]:
             automata = DFAMerger(automata, dfa).merge()
 
-        return automata
+        return Scanner(automata)
