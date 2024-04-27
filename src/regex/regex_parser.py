@@ -15,7 +15,10 @@ class RegexParser:
         else:
             print("---------- Automata ----------")
         print(automata)
-        print("---------- End Automata ----------")
+        if title:
+            print("---------- End of {} ----------".format(title))
+        else:
+            print("---------- End of Automata ----------")
 
     def parse(self) -> Automata:
         automata = Automata()

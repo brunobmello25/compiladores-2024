@@ -6,7 +6,7 @@ from src.regex.regex_parser import RegexParser
 def test_parse_multiple_ors_with_postfix():
     State.state_counter = 0
 
-    nfa = RegexParser(RegexLexer("(a|(b|c))*")).parse()
+    nfa = RegexParser(RegexLexer("(a|b|c)*")).parse()
     print()
     print(nfa)
 
