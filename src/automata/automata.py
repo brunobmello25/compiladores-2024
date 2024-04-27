@@ -57,15 +57,13 @@ class Automata:
     def __str__(self):
         output = ""
 
-        output += f"Start State: {self.start_state.name}\n\n"
+        output += f"Start State: {self.start_state.name}\n"
 
         output += "States: "
         output += ", ".join(sorted(state.name for state in self.states))
-        output += "\n"
 
         output += "\nAccept States: "
         output += ", ".join(sorted(state.name for state in self.accept_states))
-        output += "\n"
 
         output += "\nTransitions:\n"
         output += "\n".join(
