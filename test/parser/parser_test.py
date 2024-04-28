@@ -1,19 +1,11 @@
+from src.parser.ast import Assignment
 from src.parser.parser import Parser
-from src.scanner.scanner import Scanner
 from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token import Token
 from src.scanner.token_priority import TokenPriority
 
 
 def test_parse_basic_language():
-    scanner = _build_basic_scanner()
-    result = Parser(scanner).parse()
-
-    print()
-    print(result)
-
-
-def _build_basic_scanner() -> Scanner:
     """
     scanner for the following basic program:
 
@@ -24,7 +16,6 @@ def _build_basic_scanner() -> Scanner:
     50 PRINT "SUM OF A AND B IS"
     60 PRINT A + B
     """
-
     scanner = ScannerGenerator()\
         .add_token("x", "filler", TokenPriority.LOW)\
         .generate_scanner()
@@ -65,4 +56,5 @@ def _build_basic_scanner() -> Scanner:
         Token("B", "IDENTIFIER", TokenPriority.LOW),
     ]
 
-    return scanner
+    result = Parser(scanner).parse()
+    assert isinstance(result.statements[0], Assignment)

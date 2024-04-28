@@ -33,10 +33,19 @@ class BinaryExpression(Expression):
 
 @dataclass
 class NumberLiteral(Expression):
+    # TODO: use an int here
     value: str
 
     def __str__(self, level=0):
         return "  " * level + f"NumberLiteral: {self.value}"
+
+
+@dataclass
+class StringLiteral(Expression):
+    value: str
+
+    def __str__(self, level=0):
+        return "  " * level + f"StringLiteral: {self.value}"
 
 
 @dataclass
@@ -71,4 +80,4 @@ class Program(ASTNode):
     statements: List[ASTNode]
 
     def __str__(self, level=0):
-        return "\n".join(stmt.__str__(level) for stmt in self.statements)
+        return "\n\n".join(stmt.__str__(level) for stmt in self.statements)

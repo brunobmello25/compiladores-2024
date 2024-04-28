@@ -1,4 +1,4 @@
-from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, NumberLiteral, PrintStatement, Program, VariableReference
+from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
 from src.scanner.scanner import Scanner
 from src.scanner.token import Token
 
@@ -76,5 +76,9 @@ class Parser:
             name = self.current_token.value
             self.advance()
             return VariableReference(name=name)
+        elif self.current_token.type == 'STRING':
+            value = self.current_token.value
+            self.advance()
+            return StringLiteral(value=value)
         else:
             raise Exception("Syntax Error: Expected a term")
