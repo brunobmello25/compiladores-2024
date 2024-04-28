@@ -34,8 +34,26 @@ def test_complex_expression_parsing():
     ]
 
     result = Parser(scanner).parse()
-    print()
-    print(result)
+
+    stmt = result.statements[0][0]
+    assert isinstance(stmt, Assignment)
+    assert stmt == Assignment("RESULT", BinaryExpression(
+        left=VariableReference("A"),
+        operator="ADDITION",
+        right=BinaryExpression(
+            left=BinaryExpression(
+                left=VariableReference("B"),
+                operator="MULTIPLICATION",
+                right=VariableReference("C"),
+            ),
+            operator="DIVISION",
+            right=BinaryExpression(
+                left=VariableReference("B"),
+                operator="SUBTRACTION",
+                right=VariableReference("A"),
+            ),
+        )
+    ))
 
 
 def test_parse_basic_language():
