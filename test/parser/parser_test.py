@@ -9,6 +9,7 @@ def test_parse_basic_language():
     scanner = _build_basic_scanner()
     result = Parser(scanner).parse()
 
+    print()
     print(result)
 
 
