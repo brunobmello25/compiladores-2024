@@ -33,7 +33,7 @@ class BinaryExpression(Expression):
 
 @dataclass
 class NumberLiteral(Expression):
-    value: int
+    value: str
 
     def __str__(self, level=0):
         return "  " * level + f"NumberLiteral: {self.value}"

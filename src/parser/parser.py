@@ -1,3 +1,4 @@
+from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, NumberLiteral, PrintStatement, Program, VariableReference
 from src.scanner.scanner import Scanner
 from src.scanner.token import Token
 
@@ -19,17 +20,17 @@ class Parser:
             raise Exception(f"Syntax Error: Expected {
                             token_type}, found {self.current_token.type}")
 
-    def parse(self):
+    def parse(self) -> Program:
         """The entry point for parsing."""
-        program = []
+        statements = []
         while self.current_token.type != 'EOF':
             if self.current_token.type == 'NUMBER':  # Handle line numbers
                 self.advance()
                 statement = self.parse_statement()
-                program.append(statement)
-        return program
+                statements.append(statement)
+        return Program(statements=statements)
 
-    def parse_statement(self):
+    def parse_statement(self) -> ASTNode:
         """Parse individual statements based on the first token after the line number."""
         if self.current_token.type == 'LET':
             return self.parse_assignment()
@@ -38,13 +39,13 @@ class Parser:
         else:
             raise Exception("Syntax Error: Unrecognized statement")
 
-    def parse_print_statement(self):
+    def parse_print_statement(self) -> PrintStatement:
         """Parse a PRINT statement."""
         self.expect('PRINT')  # Ensure the current token is PRINT and advance
         expr = self.parse_expression()
-        return {'type': 'print', 'value': expr}
+        return PrintStatement(value=expr)
 
-    def parse_assignment(self):
+    def parse_assignment(self) -> Assignment:
         """Parse a variable assignment statement."""
         self.expect('LET')
         if self.current_token.type != 'IDENTIFIER':
@@ -53,28 +54,27 @@ class Parser:
         self.advance()
         self.expect('EQUALS')
         expr = self.parse_expression()
-        return {'type': 'assignment', 'variable': var_name, 'value': expr}
+        return Assignment(variable=var_name, value=expr)
 
-    def parse_expression(self):
+    def parse_expression(self) -> Expression:
         """Parse an expression, including handling of basic arithmetic."""
         left = self.parse_term()
         while self.current_token.type in ['PLUS', 'MINUS']:
             op = self.current_token.type
             self.advance()
             right = self.parse_term()
-            left = {'type': 'binary_expr', 'operator': op,
-                    'left': left, 'right': right}
+            left = BinaryExpression(left=left, right=right, operator=op)
         return left
 
-    def parse_term(self):
+    def parse_term(self) -> Expression:
         """Parse a term, which is currently just a number or a variable."""
         if self.current_token.type == 'NUMBER':
             value = self.current_token.value
             self.advance()
-            return {'type': 'number', 'value': value}
+            return NumberLiteral(value=value)
         elif self.current_token.type == 'IDENTIFIER':
             name = self.current_token.value
             self.advance()
-            return {'type': 'variable', 'name': name}
+            return VariableReference(name=name)
         else:
             raise Exception("Syntax Error: Expected a term")
