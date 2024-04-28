@@ -58,14 +58,50 @@ class Parser:
         return Assignment(variable=var_name, value=expr)
 
     def parse_expression(self) -> Expression:
-        """Parse an expression, including handling of basic arithmetic."""
-        left = self.parse_term()
-        while self.current_token.type in ['PLUS', 'MINUS']:
-            op = self.current_token.type
+        """Parse an expression, handling different precedence levels for + and -."""
+        return self.parse_additive()
+
+    def parse_additive(self) -> Expression:
+        """Parse additive expressions, which involve + and - operators."""
+        expr = self.parse_multiplicative()
+        while self.current_token.type in ['ADDITION', 'SUBTRACTION']:
+            operator = self.current_token.type
             self.advance()
-            right = self.parse_term()
-            left = BinaryExpression(left=left, right=right, operator=op)
-        return left
+            right = self.parse_multiplicative()
+            expr = BinaryExpression(left=expr, operator=operator, right=right)
+        return expr
+
+    def parse_multiplicative(self) -> Expression:
+        """Parse multiplicative expressions, which involve * and / operators."""
+        expr = self.parse_factor()
+        while self.current_token.type in ['MULTIPLICATION', 'DIVISION']:
+            operator = self.current_token.type
+            self.advance()
+            right = self.parse_factor()
+            expr = BinaryExpression(left=expr, operator=operator, right=right)
+        return expr
+
+    def parse_factor(self) -> Expression:
+        """Parse factors which are numbers, identifiers or parenthesized expressions."""
+        if self.current_token.type == 'NUMBER':
+            value = self.current_token.value
+            self.advance()
+            return NumberLiteral(value=value)
+        elif self.current_token.type == 'IDENTIFIER':
+            name = self.current_token.value
+            self.advance()
+            return VariableReference(name=name)
+        elif self.current_token.type == 'LPAREN':
+            self.advance()  # skip '('
+            expr = self.parse_expression()
+            self.expect('RPAREN')  # match ')'
+            return expr
+        elif self.current_token.type == "STRING":
+            value = self.current_token.value
+            self.advance()
+            return StringLiteral(value=value)
+        else:
+            raise Exception("Syntax Error: Expected a factor")
 
     def parse_term(self) -> Expression:
         """Parse a term, which is currently just a number or a variable."""

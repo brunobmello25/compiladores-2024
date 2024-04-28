@@ -5,6 +5,39 @@ from src.scanner.token import Token
 from src.scanner.token_priority import TokenPriority
 
 
+def test_complex_expression_parsing():
+    """
+    scanner for:
+
+    10 LET RESULT = A + B * C / (B - A)
+    """
+    scanner = ScannerGenerator()\
+        .add_token("x", "filler", TokenPriority.LOW)\
+        .generate_scanner()
+
+    scanner.DEBUG_tokens = [
+        Token("10", "NUMBER", TokenPriority.LOW),
+        Token("LET", "LET", TokenPriority.HIGH),
+        Token("RESULT", "IDENTIFIER", TokenPriority.LOW),
+        Token("=", "EQUALS", TokenPriority.HIGH),
+        Token("A", "IDENTIFIER", TokenPriority.LOW),
+        Token("+", "ADDITION", TokenPriority.HIGH),
+        Token("B", "IDENTIFIER", TokenPriority.LOW),
+        Token("*", "MULTIPLICATION", TokenPriority.HIGH),
+        Token("C", "IDENTIFIER", TokenPriority.LOW),
+        Token("/", "DIVISION", TokenPriority.HIGH),
+        Token("(", "LPAREN", TokenPriority.HIGH),
+        Token("B", "IDENTIFIER", TokenPriority.LOW),
+        Token("-", "SUBTRACTION", TokenPriority.HIGH),
+        Token("A", "IDENTIFIER", TokenPriority.LOW),
+        Token(")", "RPAREN", TokenPriority.HIGH),
+    ]
+
+    result = Parser(scanner).parse()
+    print()
+    print(result)
+
+
 def test_parse_basic_language():
     """
     scanner for the following basic program:
@@ -38,7 +71,7 @@ def test_parse_basic_language():
         Token("C", "IDENTIFIER", TokenPriority.LOW),
         Token("=", "EQUALS", TokenPriority.HIGH),
         Token("A", "IDENTIFIER", TokenPriority.LOW),
-        Token("+", "PLUS", TokenPriority.HIGH),
+        Token("+", "ADDITION", TokenPriority.HIGH),
         Token("B", "IDENTIFIER", TokenPriority.LOW),
 
         Token("40", "NUMBER", TokenPriority.LOW),
@@ -52,7 +85,7 @@ def test_parse_basic_language():
         Token("60", "NUMBER", TokenPriority.LOW),
         Token("PRINT", "PRINT", TokenPriority.HIGH),
         Token("A", "IDENTIFIER", TokenPriority.LOW),
-        Token("+", "PLUS", TokenPriority.HIGH),
+        Token("+", "ADDITION", TokenPriority.HIGH),
         Token("B", "IDENTIFIER", TokenPriority.LOW),
     ]
 
@@ -69,7 +102,7 @@ def test_parse_basic_language():
     stmt = result.statements[2][0]
     assert isinstance(stmt, Assignment)
     assert stmt == Assignment("C", BinaryExpression(
-        left=VariableReference("A"), right=VariableReference("B"), operator="PLUS"))
+        left=VariableReference("A"), right=VariableReference("B"), operator="ADDITION"))
 
     stmt = result.statements[3][0]
     assert isinstance(stmt, PrintStatement)
@@ -84,7 +117,7 @@ def test_parse_basic_language():
     assert stmt == PrintStatement(
         BinaryExpression(
             left=VariableReference("A"),
-            operator="PLUS",
+            operator="ADDITION",
             right=VariableReference("B"),
         )
     )
