@@ -17,7 +17,7 @@ class Scanner:
 
     def next_token(self) -> Token:
         if self.DEBUG_tokens_index >= len(self.DEBUG_tokens):
-            return Token("EOF", TokenPriority.HIGH)
+            return Token("EOF", "EOF", TokenPriority.HIGH)
 
         token = self.DEBUG_tokens[self.DEBUG_tokens_index]
         self.DEBUG_tokens_index += 1
