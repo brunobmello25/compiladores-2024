@@ -1,4 +1,4 @@
-from src.parser.ast import Assignment
+from src.parser.ast import Assignment, BinaryExpression, NumberLiteral, PrintStatement, StringLiteral, VariableReference
 from src.parser.parser import Parser
 from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token import Token
@@ -57,4 +57,34 @@ def test_parse_basic_language():
     ]
 
     result = Parser(scanner).parse()
-    assert isinstance(result.statements[0], Assignment)
+
+    stmt = result.statements[0][0]
+    assert isinstance(stmt, Assignment)
+    assert stmt == Assignment("A", NumberLiteral("5"))
+
+    stmt = result.statements[1][0]
+    assert isinstance(stmt, Assignment)
+    assert stmt == Assignment("B", NumberLiteral("10"))
+
+    stmt = result.statements[2][0]
+    assert isinstance(stmt, Assignment)
+    assert stmt == Assignment("C", BinaryExpression(
+        left=VariableReference("A"), right=VariableReference("B"), operator="PLUS"))
+
+    stmt = result.statements[3][0]
+    assert isinstance(stmt, PrintStatement)
+    assert stmt == PrintStatement(VariableReference("C"))
+
+    stmt = result.statements[4][0]
+    assert isinstance(stmt, PrintStatement)
+    assert stmt == PrintStatement(StringLiteral("SUM OF A AND B IS"))
+
+    stmt = result.statements[5][0]
+    assert isinstance(stmt, PrintStatement)
+    assert stmt == PrintStatement(
+        BinaryExpression(
+            left=VariableReference("A"),
+            operator="PLUS",
+            right=VariableReference("B"),
+        )
+    )

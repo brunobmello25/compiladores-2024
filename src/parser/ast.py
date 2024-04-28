@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import List
+from typing import List, Tuple
 
 
 @dataclass
@@ -77,7 +77,13 @@ class PrintStatement(ASTNode):
 
 @dataclass
 class Program(ASTNode):
-    statements: List[ASTNode]
+    statements: List[Tuple[ASTNode, int]]
 
     def __str__(self, level=0):
-        return "\n\n".join(stmt.__str__(level) for stmt in self.statements)
+        def print_stmt(stmt: ASTNode, line: int):
+            output = ""
+            output += "  " * level + f"Line: {line}\n"
+            output += stmt.__str__(level)
+            return output
+
+        return "\n\n".join(print_stmt(stmt[0], stmt[1]) for stmt in self.statements)

@@ -25,9 +25,10 @@ class Parser:
         statements = []
         while self.current_token.type != 'EOF':
             if self.current_token.type == 'NUMBER':  # Handle line numbers
+                line_number = int(self.current_token.value)
                 self.advance()
                 statement = self.parse_statement()
-                statements.append(statement)
+                statements.append(tuple([statement, line_number]))
         return Program(statements=statements)
 
     def parse_statement(self) -> ASTNode:
