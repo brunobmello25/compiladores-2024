@@ -6,14 +6,12 @@ from src.scanner.token import Token
 class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner = scanner
-        self.advance()  # Initialize the first token
+        self.advance()
 
     def advance(self):
-        """Move to the next token."""
         self.current_token: Token = self.scanner.next_token()
 
     def expect(self, token_type):
-        """Ensure the current token matches the expected type and advance."""
         if self.current_token.type == token_type:
             self.advance()
         else:
@@ -21,10 +19,9 @@ class Parser:
                             token_type}, found {self.current_token.type}")
 
     def parse(self) -> Program:
-        """The entry point for parsing."""
         statements = []
         while self.current_token.type != 'EOF':
-            if self.current_token.type == 'NUMBER':  # Handle line numbers
+            if self.current_token.type == 'NUMBER':
                 line_number = int(self.current_token.value)
                 self.advance()
                 statement = self.parse_statement()
@@ -32,7 +29,6 @@ class Parser:
         return Program(statements=statements)
 
     def parse_statement(self) -> ASTNode:
-        """Parse individual statements based on the first token after the line number."""
         if self.current_token.type == 'LET':
             return self.parse_assignment()
         elif self.current_token.type == 'PRINT':
@@ -41,13 +37,11 @@ class Parser:
             raise Exception("Syntax Error: Unrecognized statement")
 
     def parse_print_statement(self) -> PrintStatement:
-        """Parse a PRINT statement."""
-        self.expect('PRINT')  # Ensure the current token is PRINT and advance
+        self.expect('PRINT')
         expr = self.parse_expression()
         return PrintStatement(value=expr)
 
     def parse_assignment(self) -> Assignment:
-        """Parse a variable assignment statement."""
         self.expect('LET')
         if self.current_token.type != 'IDENTIFIER':
             raise Exception("Syntax Error: Expected identifier")
@@ -58,11 +52,9 @@ class Parser:
         return Assignment(variable=var_name, value=expr)
 
     def parse_expression(self) -> Expression:
-        """Parse an expression, handling different precedence levels for + and -."""
         return self.parse_additive()
 
     def parse_additive(self) -> Expression:
-        """Parse additive expressions, which involve + and - operators."""
         expr = self.parse_multiplicative()
         while self.current_token.type in ['ADDITION', 'SUBTRACTION']:
             operator = self.current_token.type
@@ -72,7 +64,6 @@ class Parser:
         return expr
 
     def parse_multiplicative(self) -> Expression:
-        """Parse multiplicative expressions, which involve * and / operators."""
         expr = self.parse_factor()
         while self.current_token.type in ['MULTIPLICATION', 'DIVISION']:
             operator = self.current_token.type
@@ -82,7 +73,6 @@ class Parser:
         return expr
 
     def parse_factor(self) -> Expression:
-        """Parse factors which are numbers, identifiers or parenthesized expressions."""
         if self.current_token.type == 'NUMBER':
             value = self.current_token.value
             self.advance()
@@ -104,7 +94,6 @@ class Parser:
             raise Exception("Syntax Error: Expected a factor")
 
     def parse_term(self) -> Expression:
-        """Parse a term, which is currently just a number or a variable."""
         if self.current_token.type == 'NUMBER':
             value = self.current_token.value
             self.advance()
