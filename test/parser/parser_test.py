@@ -5,6 +5,70 @@ from src.scanner.token import Token
 from src.scanner.token_priority import TokenPriority
 
 
+def test_multiple_paren_levels():
+    """
+    scanner for:
+
+    10 LET RESULT = (A + B) * ((C / (D - E)) + F)
+    """
+
+    scanner = ScannerGenerator()\
+        .add_token("x", "filler", TokenPriority.LOW)\
+        .generate_scanner()
+
+    scanner.DEBUG_tokens = [
+        Token("10", "NUMBER", TokenPriority.LOW),
+        Token("LET", "LET", TokenPriority.HIGH),
+        Token("RESULT", "IDENTIFIER", TokenPriority.LOW),
+        Token("=", "EQUALS", TokenPriority.HIGH),
+        Token("(", "LPAREN", TokenPriority.HIGH),
+        Token("A", "IDENTIFIER", TokenPriority.LOW),
+        Token("+", "ADDITION", TokenPriority.HIGH),
+        Token("B", "IDENTIFIER", TokenPriority.LOW),
+        Token(")", "RPAREN", TokenPriority.HIGH),
+        Token("*", "MULTIPLICATION", TokenPriority.HIGH),
+        Token("(", "LPAREN", TokenPriority.HIGH),
+        Token("(", "LPAREN", TokenPriority.HIGH),
+        Token("C", "IDENTIFIER", TokenPriority.LOW),
+        Token("/", "DIVISION", TokenPriority.HIGH),
+        Token("(", "LPAREN", TokenPriority.HIGH),
+        Token("D", "IDENTIFIER", TokenPriority.LOW),
+        Token("-", "SUBTRACTION", TokenPriority.HIGH),
+        Token("E", "IDENTIFIER", TokenPriority.LOW),
+        Token(")", "RPAREN", TokenPriority.HIGH),
+        Token(")", "RPAREN", TokenPriority.HIGH),
+        Token("+", "ADDITION", TokenPriority.HIGH),
+        Token("F", "IDENTIFIER", TokenPriority.LOW),
+        Token(")", "RPAREN", TokenPriority.HIGH),
+    ]
+
+    result = Parser(scanner).parse()
+
+    stmt = result.statements[0][0]
+    assert isinstance(stmt, Assignment)
+    assert stmt == Assignment("RESULT", BinaryExpression(
+        left=BinaryExpression(
+            left=VariableReference("A"),
+            operator="ADDITION",
+            right=VariableReference("B"),
+        ),
+        operator="MULTIPLICATION",
+        right=BinaryExpression(
+            left=BinaryExpression(
+                left=VariableReference("C"),
+                operator="DIVISION",
+                right=BinaryExpression(
+                    left=VariableReference("D"),
+                    operator="SUBTRACTION",
+                    right=VariableReference("E"),
+                ),
+            ),
+            operator="ADDITION",
+            right=VariableReference("F")
+        ),
+    ))
+
+
 def test_complex_expression_parsing():
     """
     scanner for:
