@@ -11,9 +11,11 @@ class Parser:
     def advance(self):
         self.current_token: Token = self.scanner.next_token()
 
-    def expect(self, token_type):
+    def expect(self, token_type) -> str:
         if self.current_token.type == token_type:
+            value = self.current_token.value
             self.advance()
+            return value
         else:
             raise Exception(f"Syntax Error: Expected {
                             token_type}, found {self.current_token.type}")
@@ -43,10 +45,7 @@ class Parser:
 
     def parse_assignment(self) -> Assignment:
         self.expect('LET')
-        if self.current_token.type != 'IDENTIFIER':
-            raise Exception("Syntax Error: Expected identifier")
-        var_name = self.current_token.value
-        self.advance()
+        var_name = self.expect("IDENTIFIER")
         self.expect('EQUALS')
         expr = self.parse_expression()
         return Assignment(variable=var_name, value=expr)
