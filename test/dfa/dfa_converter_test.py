@@ -4,6 +4,13 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+# TODO: quebrou aqui agora, doidão
+def test_fodaseessamerda():
+    nfa = RegexParser(RegexLexer("a(a|b)*")).parse()
+    print()
+    print(nfa)
+
+
 def test_dfa_acception():
     State.state_counter = 0
 

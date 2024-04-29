@@ -44,6 +44,9 @@ def test_multiple_paren_levels():
 
     result = Parser(scanner).parse()
 
+    print()
+    print(result)
+
     stmt = result.statements[0][0]
     assert isinstance(stmt, Assignment)
     assert stmt == Assignment("RESULT", BinaryExpression(

@@ -12,6 +12,7 @@ class DFA:
         self.accept_states = accept_states
         self.alphabet = alphabet
 
+    # TODO: convert to __str__
     def print(self):
         print(f"Alphabet: {', '.join(sorted(self.alphabet))}")
 
