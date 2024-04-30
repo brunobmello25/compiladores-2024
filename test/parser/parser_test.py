@@ -5,6 +5,8 @@ from src.scanner.token import Token
 from src.scanner.token_priority import TokenPriority
 
 
+# TODO: ajustar esses testes de debug pra funcionar com o scanner - scanner precisa
+# terminar de parsear o input lidando com espaços e caralho a quatro
 def test_multiple_paren_levels():
     """
     scanner for:
