@@ -8,8 +8,10 @@ def test_scanner_generator_add_token():
         .add_token("[A-z]([a-z]|([A-Z]|[0-9]))*", "identifier", TokenPriority.LOW)\
         .add_token("let", "let", TokenPriority.HIGH)\
         .add_token("[0-9]+", "number", TokenPriority.HIGH)\
+        .with_input("")\
         .generate_scanner()
 
+    assert scanner.automata is not None
     passes, state = scanner.automata.check_final_state("let")
     assert passes
     assert state.token_type == "let"

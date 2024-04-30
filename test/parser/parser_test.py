@@ -14,6 +14,7 @@ def test_multiple_paren_levels():
 
     scanner = ScannerGenerator()\
         .add_token("x", "filler", TokenPriority.LOW)\
+        .with_input("")\
         .generate_scanner()
 
     scanner.DEBUG_tokens = [
@@ -80,6 +81,7 @@ def test_complex_expression_parsing():
     """
     scanner = ScannerGenerator()\
         .add_token("x", "filler", TokenPriority.LOW)\
+        .with_input("")\
         .generate_scanner()
 
     scanner.DEBUG_tokens = [
@@ -136,6 +138,7 @@ def test_parse_basic_language():
     """
     scanner = ScannerGenerator()\
         .add_token("x", "filler", TokenPriority.LOW)\
+        .with_input("")\
         .generate_scanner()
 
     scanner.DEBUG_tokens = [

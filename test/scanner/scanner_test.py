@@ -6,6 +6,7 @@ from src.scanner.token_priority import TokenPriority
 def test_DEBUG_next_token():
     scanner = ScannerGenerator()\
         .add_token("let", "let", TokenPriority.HIGH)\
+        .with_input("")\
         .generate_scanner()
 
     scanner.DEBUG_tokens = [
