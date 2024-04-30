@@ -1,6 +1,6 @@
 from src.automata.automata import Automata
 from src.regex.regex_lexer import RegexLexer
-from src.utils.symbol import SymbolType
+from src.utils.symbol import Symbol, SymbolType
 
 
 class RegexParser:
@@ -35,7 +35,7 @@ class RegexParser:
             )
 
             if self.peek_symbol.is_postfix_operator():
-                self._process_postfix_symbol(new_automata)
+                self._process_postfix_symbol(new_automata, self.peek_symbol)
                 self._consume()
 
             automata.concat(new_automata)
@@ -43,6 +43,11 @@ class RegexParser:
 
         while self.current_symbol.is_shortcut_symbol():
             new_automata = Automata.make_shortcut_automata(self.current_symbol)
+
+            if self.peek_symbol.is_postfix_operator():
+                self._process_postfix_symbol(new_automata, self.peek_symbol)
+                self._consume()
+
             automata.concat(new_automata)
             self._consume()
 
@@ -60,6 +65,11 @@ class RegexParser:
         if self.current_symbol.type == SymbolType.CLOSE_PARENTHESIS:
             if self.current_level == return_to:
                 self._consume()
+
+                if self.current_symbol.is_postfix_operator():
+                    self._process_postfix_symbol(automata, self.current_symbol)
+                    self._consume()
+
             self.current_level -= 1
             return automata
 
@@ -81,16 +91,16 @@ class RegexParser:
         self.current_level -= 1
         return automata
 
-    def _process_postfix_symbol(self, automata: Automata):
-        if self.peek_symbol.type == SymbolType.STAR:
+    def _process_postfix_symbol(self, automata: Automata, symbol: Symbol):
+        if symbol.type == SymbolType.STAR:
             automata.star()
-        elif self.peek_symbol.type == SymbolType.PLUS:
+        elif symbol.type == SymbolType.PLUS:
             automata.plus()
-        elif self.peek_symbol.type == SymbolType.OPTIONAL:
+        elif symbol.type == SymbolType.OPTIONAL:
             automata.optional()
         else:
             raise ValueError(
-                "Invalid postfix symbol: {}".format(self.peek_symbol)
+                "Invalid postfix symbol: {}".format(symbol)
             )
 
     def _consume(self):
