@@ -1,4 +1,7 @@
+import itertools
+
 from src.automata.state import State
+from src.dfa.dfa_converter import DFAConverter
 from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
@@ -7,8 +10,14 @@ def test_parse_multiple_ors_with_postfix():
     State.state_counter = 0
 
     nfa = RegexParser(RegexLexer("(a|b|c)*")).parse()
-    print()
-    print(nfa)
+    dfa = DFAConverter(nfa).get_dfa()
+
+    max = 3
+    combinations = [''.join(p) for i in range(max + 1)
+                    for p in itertools.product("abc", repeat=i)]
+
+    for combination in combinations:
+        assert dfa.check(combination)
 
 
 def test_star_concatenated():

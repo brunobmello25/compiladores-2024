@@ -68,6 +68,12 @@ class RegexLexer:
             self.pos += 1
             return Symbol(SymbolType.PLUS, SymbolType.PLUS.value)
 
+        if self.input[self.pos] == '\\':
+            self.pos += 1
+            value = self.input[self.pos]
+            self.pos += 1
+            return Symbol(SymbolType.ESCAPED, value)
+
         return Symbol(SymbolType.ILLEGAL, self.input[self.pos])
 
     def is_alphabetic_digit(self, c: str) -> bool:

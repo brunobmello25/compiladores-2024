@@ -13,6 +13,9 @@ class DFAConverter:
         self.start_state = self._epsilon_closure(frozenset([nfa.start_state]))
         self.accept_states = set()
 
+        if any(state in nfa.accept_states for state in self.start_state):
+            self.accept_states.add(self.start_state)
+
         self._build()
 
     def get_dfa(self) -> DFA:
@@ -46,7 +49,7 @@ class DFAConverter:
 
         while queue:
             current = queue.popleft()
-            for symbol in self.nfa.symbol_set():  # Ensure this is properly implemented in the NFA class
+            for symbol in self.nfa.symbol_set():
                 next_states = self._move(current, symbol)
                 next_state_closure = self._epsilon_closure(next_states)
 

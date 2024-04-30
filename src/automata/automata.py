@@ -12,6 +12,7 @@ class Automata:
         self.transition_function: Dict[
             Tuple[State, str | None], Set[State]
         ] = {}
+        self.return_to: int | None = None
 
     def symbol_set(self):
         return {
@@ -145,5 +146,3 @@ class Automata:
     def star(self):
         self.plus()
         self.accept_states.add(self.start_state)
-
-    from collections import deque

@@ -1,7 +1,22 @@
+import itertools
+
 from src.automata.state import State
 from src.dfa.dfa_converter import DFAConverter
 from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
+
+
+def test_parenthesis_with_or_and_star():
+    nfa = RegexParser(RegexLexer("a(a|b)*")).parse()
+    dfa = DFAConverter(nfa).get_dfa()
+
+    max = 3
+    post_combinations = [''.join(p) for i in range(max + 1)
+                         for p in itertools.product("ab", repeat=i)]
+
+    assert dfa.check("a")
+    for combination in post_combinations:
+        assert dfa.check("a" + combination)
 
 
 def test_dfa_acception():
