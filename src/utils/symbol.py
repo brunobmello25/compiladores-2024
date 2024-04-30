@@ -10,6 +10,7 @@ class SymbolType(Enum):
     PLUS = "+"
     OR = "|"
     OPTIONAL = "?"
+    UNDERSCORE = "_"
     OPEN_PARENTHESIS = "("
     CLOSE_PARENTHESIS = ")"
     NUMERIC_DIGIT = "DIGIT"
@@ -34,6 +35,7 @@ class Symbol:
             SymbolType.EQUAL,
             SymbolType.EXCLAMATION,
             SymbolType.SEMICOLON,
+            SymbolType.UNDERSCORE,
         ]
 
     def is_postfix_operator(self):

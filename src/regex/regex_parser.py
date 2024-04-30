@@ -9,8 +9,20 @@ class RegexParser:
         self.current_symbol = self.regex_lexer.next_symbol()
         self.peek_symbol = self.regex_lexer.next_symbol()
 
+    def DEBUG_print_automata(self, automata: Automata, title: str | None):
+        if title:
+            print("---------- {} ----------".format(title))
+        else:
+            print("---------- Automata ----------")
+        print(automata)
+        if title:
+            print("---------- End of {} ----------".format(title))
+        else:
+            print("---------- End of Automata ----------")
+
     def parse(self) -> Automata:
         automata = Automata()
+        # self.DEBUG_print_automata(automata, "Initial automata")
 
         if self.current_symbol.type == SymbolType.EOF:
             return automata

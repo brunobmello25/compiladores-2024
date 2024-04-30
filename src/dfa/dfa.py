@@ -47,10 +47,10 @@ class DFA:
         self.alphabet = new_alphabet
         self.states.add(new_state)
 
-    def associate_token(self, token: str, priority: TokenPriority = TokenPriority.LOW):
+    def associate_token(self, token_type: str, token_priority: TokenPriority = TokenPriority.LOW):
         for state in self.accept_states:
-            state.token_type = token
-            state.token_priority = priority
+            state.token_type = token_type
+            state.token_priority = token_priority
 
     def check(self, word: str) -> bool:
         accepts, _ = self.check_final_state(word)

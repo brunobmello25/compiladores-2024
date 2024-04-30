@@ -54,27 +54,26 @@ class Automata:
                     queue.append(next_state)
         return closure
 
-    def print(self):
-        # Print the start state
-        print(f"Start State: {self.start_state.name}")
+    def __str__(self):
+        output = ""
 
-        # Print all states
-        print("States:", ", ".join(state.name for state in self.states))
+        output += f"Start State: {self.start_state.name}\n"
 
-        # Print accept states
-        print(
-            "Accept States:",
-            ", ".join(state.name for state in self.accept_states),
+        output += "States: "
+        output += ", ".join(sorted(state.name for state in self.states))
+
+        output += "\nAccept States: "
+        output += ", ".join(sorted(state.name for state in self.accept_states))
+
+        output += "\nTransitions:\n"
+        output += "\n".join(
+            f"  {
+                start.name} --[{symbol if symbol is not None else 'ε'}]--> {end.name}"
+            for (start, symbol), ends in self.transition_function.items()
+            for end in ends
         )
 
-        # Print the transition function
-        print("Transitions:")
-        for (start, symbol), ends in self.transition_function.items():
-            symbol_display = (
-                symbol if symbol is not None else "ε"
-            )  # ε represents epsilon transitions
-            for end in ends:
-                print(f"  {start.name} --[{symbol_display}]--> {end.name}")
+        return output
 
     def transitions_as_string(self) -> Dict[Tuple[str, str | None], Set[str]]:
         converted_dict = {

@@ -3,6 +3,14 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_parse_multiple_ors_with_postfix():
+    State.state_counter = 0
+
+    nfa = RegexParser(RegexLexer("(a|b|c)*")).parse()
+    print()
+    print(nfa)
+
+
 def test_star_concatenated():
     State.state_counter = 0
     result = RegexParser(RegexLexer("ab*c?d+e")).parse()
