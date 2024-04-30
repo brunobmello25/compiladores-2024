@@ -11,6 +11,7 @@ class DFA:
         self.states = states
         self.accept_states = accept_states
         self.alphabet = alphabet
+        self.current_state = start_state
 
     # TODO: convert to __str__
     def print(self):
@@ -49,6 +50,19 @@ class DFA:
         )
 
         return output
+
+    def transition(self, symbol: str) -> bool:
+        if (self.current_state, symbol) in self.transition_function:
+            self.current_state = self.transition_function[(
+                self.current_state, symbol)]
+            return True
+        return False
+
+    def is_accepting(self) -> bool:
+        return self.current_state in self.accept_states
+
+    def reset(self):
+        self.current_state = self.start_state
 
     def extend_alphabet(self, new_alphabet: Set[str]):
         new_state = State()
