@@ -3,7 +3,7 @@ from src.utils.symbol import Symbol, SymbolType
 
 
 def test_next_symbol():
-    input = "([A-z]|[A-Z])[0-9]?*[a-z]+?[xyz]aBCd12=!;_"
+    input = "([A-z]|[A-Z])[0-9]?*[a-z]+?[xyz]aBCd12=!;_\\(\\)\\[\\]\\*\\+"
     expected_symbols = [
         Symbol(SymbolType.OPEN_PARENTHESIS, SymbolType.OPEN_PARENTHESIS.value),
         Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
@@ -29,6 +29,12 @@ def test_next_symbol():
         Symbol(SymbolType.EXCLAMATION, "!"),
         Symbol(SymbolType.SEMICOLON, ";"),
         Symbol(SymbolType.UNDERSCORE, "_"),
+        Symbol(SymbolType.ESCAPED, "("),
+        Symbol(SymbolType.ESCAPED, ")"),
+        Symbol(SymbolType.ESCAPED, "["),
+        Symbol(SymbolType.ESCAPED, "]"),
+        Symbol(SymbolType.ESCAPED, "*"),
+        Symbol(SymbolType.ESCAPED, "+"),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),
         Symbol(SymbolType.EOF, SymbolType.EOF.value),

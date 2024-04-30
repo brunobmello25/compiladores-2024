@@ -6,6 +6,15 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_accept_escaped_characters():
+    State.state_counter = 0
+
+    nfa = RegexParser(RegexLexer("\\+\\[\\]\\(\\)\\*")).parse()
+    dfa = DFAConverter(nfa).get_dfa()
+
+    assert dfa.check("+[]()*")
+
+
 def test_associate_token():
     State.state_counter = 0
 

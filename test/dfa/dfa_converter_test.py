@@ -6,7 +6,7 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
-def test_fodaseessamerda():
+def test_parenthesis_with_or_and_star():
     nfa = RegexParser(RegexLexer("a(a|b)*")).parse()
     dfa = DFAConverter(nfa).get_dfa()
 
