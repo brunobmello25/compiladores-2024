@@ -58,8 +58,13 @@ class DFA:
             return True
         return False
 
-    def is_accepting(self) -> bool:
-        return self.current_state in self.accept_states
+    def get_accepting_info(self) -> Tuple[str, TokenPriority] | None:
+        if self.current_state in self.accept_states:
+            if self.current_state.token_type is None or self.current_state.token_priority is None:
+                raise Exception(
+                    f"Token type or priority not set for state {self.current_state.name}")
+            return self.current_state.token_type, self.current_state.token_priority
+        return None
 
     def reset(self):
         self.current_state = self.start_state

@@ -3,8 +3,9 @@ from src.utils.symbol import Symbol, SymbolType
 
 
 def test_next_symbol():
-    input = "([A-z]|[A-Z])[0-9]?*[a-z]+?[xyz]aBCd12=!;_\\(\\)\\[\\]\\*\\+"
+    input = "/([A-z]|[A-Z])[0-9]?*[a-z]+?[xyz]aBCd12=!;_\\(\\)\\[\\]\\*\\+"
     expected_symbols = [
+        Symbol(SymbolType.SLASH, "/"),
         Symbol(SymbolType.OPEN_PARENTHESIS, SymbolType.OPEN_PARENTHESIS.value),
         Symbol(SymbolType.TEXT, SymbolType.TEXT.value),
         Symbol(SymbolType.OR, SymbolType.OR.value),

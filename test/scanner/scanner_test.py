@@ -1,31 +1,58 @@
+from src.scanner.scanner import Token
 from src.scanner.scanner_generator import ScannerGenerator
-from src.scanner.token import Token
 from src.scanner.token_priority import TokenPriority
 
 
-def test_DEBUG_next_token():
+def test_next_token():
+    input = "10 LET RESULT = (A + B) * ((C / (D - E)) + F)"
+
     scanner = ScannerGenerator()\
-        .add_token("let", "let", TokenPriority.HIGH)\
-        .with_input("")\
+        .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
+        .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+        .add_token("LET", "LET", TokenPriority.HIGH)\
+        .add_token("\\(", "LPAREN", TokenPriority.HIGH)\
+        .add_token("\\)", "RPAREN", TokenPriority.HIGH)\
+        .add_token("\\+", "ADDITION", TokenPriority.HIGH)\
+        .add_token("\\*", "MULTIPLICATION", TokenPriority.HIGH)\
+        .add_token("/", "DIVISION", TokenPriority.HIGH)\
+        .add_token("-", "SUBTRACTION", TokenPriority.HIGH)\
+        .add_token("=", "EQUALS", TokenPriority.HIGH)\
+        .with_input(input)\
         .generate_scanner()
 
-    scanner.DEBUG_tokens = [
-        Token("a", "type1", TokenPriority.LOW),
-        Token("b", "type2", TokenPriority.LOW)
+    expected_tokens = [
+        ("10", "NUMBER", TokenPriority.HIGH),
+        ("LET", "LET", TokenPriority.HIGH),
+        ("RESULT", "IDENTIFIER", TokenPriority.LOW),
+        ("=", "EQUALS", TokenPriority.HIGH),
+        ("(", "LPAREN", TokenPriority.HIGH),
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("+", "ADDITION", TokenPriority.HIGH),
+        ("B", "IDENTIFIER", TokenPriority.LOW),
+        (")", "EQUALS", TokenPriority.HIGH),
+        ("*", "MULTIPLICATION", TokenPriority.HIGH),
+        ("(", "LPAREN", TokenPriority.HIGH),
+        ("(", "LPAREN", TokenPriority.HIGH),
+        ("C", "IDENTIFIER", TokenPriority.LOW),
+        ("/", "DIVISION", TokenPriority.HIGH),
+        ("(", "LPAREN", TokenPriority.HIGH),
+        ("D", "IDENTIFIER", TokenPriority.LOW),
+        ("-", "SUBTRACTION", TokenPriority.HIGH),
+        ("E", "IDENTIFIER", TokenPriority.LOW),
+        (")", "RPAREN", TokenPriority.HIGH),
+        (")", "RPAREN", TokenPriority.HIGH),
+        ("+", "ADDITION", TokenPriority.HIGH),
+        ("F", "IDENTIFIER", TokenPriority.LOW),
+        (")", "RPAREN", TokenPriority.HIGH),
+        ("EOF", "EOF", TokenPriority.HIGH),
+        ("EOF", "EOF", TokenPriority.HIGH),
+        ("EOF", "EOF", TokenPriority.HIGH),
+        ("EOF", "EOF", TokenPriority.HIGH),
     ]
 
-    token = scanner.next_token()
-    assert token.value == "a"
-    assert token.type == "type1"
-    assert token.priority == TokenPriority.LOW
-
-    token = scanner.next_token()
-    assert token.value == "b"
-    assert token.type == "type2"
-    assert token.priority == TokenPriority.LOW
-
-    assert scanner.next_token().type == "EOF"
-    assert scanner.next_token().type == "EOF"
-    assert scanner.next_token().type == "EOF"
-    assert scanner.next_token().type == "EOF"
-    assert scanner.next_token().type == "EOF"
+    for expected_token in expected_tokens:
+        token = scanner.next_token()
+        assert isinstance(token, Token)
+        assert token.value == expected_token[0]
+        assert token.type == expected_token[1]
+        assert token.priority == expected_token[2]

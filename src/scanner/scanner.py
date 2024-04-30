@@ -26,7 +26,7 @@ class Scanner:
         self.automata: DFA | None = None
         self.input: str | None = None
         self.pos = 0
-        self.errors: List[str] = []
+        self.errors: List[LexicalError] = []
 
     def with_input(self, input: str) -> "Scanner":
         self.input = input
@@ -36,7 +36,7 @@ class Scanner:
         self.automata = automata
         return self
 
-    def next_token(self) -> Token:
+    def next_token(self) -> Token | LexicalError:
         if self.input is None or self.automata is None:
             raise Exception(
                 "Scanner not initialized. You must call '.with_automata' and '.with_input' first.")
@@ -44,32 +44,29 @@ class Scanner:
         if self.pos >= len(self.input):
             return Token("EOF", "EOF", TokenPriority.HIGH)
 
-        self.automata.reset()  # Start at the initial state of the DFA
-
+        self.automata.reset()
         longest_accepting_length = 0
+        last_accepting_info = None
         start_pos = self.pos
         while self.pos < len(self.input):
             char = self.input[self.pos]
             if not self.automata.transition(char):
-                # Record the error and attempt to continue scanning
-                error_message = f"Invalid character {
-                    char} at position {self.pos}"
-                self.errors.append(error_message)
                 self.pos += 1  # Skip the problematic character
-                self.automata.reset()  # Reset the DFA to start state for a new token
-                continue  # Skip to the next character in the input
-            if self.automata.is_accepting():
+                self.automata.reset()  # Reset for next token
+                continue
+            accepting_info = self.automata.get_accepting_info()
+            if accepting_info is not None:  # Token type is not None
                 longest_accepting_length = self.pos - start_pos + 1
+                last_accepting_info = accepting_info
             self.pos += 1
 
-        if longest_accepting_length > 0:
-            # Return the longest valid token found
+        if longest_accepting_length > 0 and last_accepting_info:
+            token_type, token_priority = last_accepting_info
             token_value = self.input[start_pos:start_pos +
                                      longest_accepting_length]
-            return Token("VALID_TOKEN_TYPE", token_value, TokenPriority.NORMAL)
-        else:
-            # No valid token found, return an error token (if not already reported)
-            if not self.errors:
-                self.errors.append(
-                    f"No valid token found starting from position {start_pos}")
-            return Token("ERROR", self.input[start_pos:self.pos], TokenPriority.LOW)
+            return Token(token_type, token_value, token_priority)
+
+        if self.errors:
+            return self.errors.pop(0)
+
+        return LexicalError("No valid token found and no specific error identified", start_pos)

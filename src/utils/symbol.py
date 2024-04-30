@@ -19,8 +19,9 @@ class SymbolType(Enum):
     EQUAL = "="
     EXCLAMATION = "!"
     SEMICOLON = ";"
-    PIPE = "|"
     ILLEGAL = "ILLEGAL"
+    SLASH = "/"
+    HIFEN = "-"
     ESCAPED = "\\"
 
 
@@ -38,6 +39,8 @@ class Symbol:
             SymbolType.SEMICOLON,
             SymbolType.UNDERSCORE,
             SymbolType.ESCAPED,
+            SymbolType.SLASH,
+            SymbolType.HIFEN,
         ]
 
     def is_postfix_operator(self):
