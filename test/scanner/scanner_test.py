@@ -3,6 +3,19 @@ from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
 
 
+def test_parse_string():
+    input = '"A 10 20 B 30"'
+    scanner = ScannerGenerator()\
+        .add_token('"([A-z]|[0-9])*"', "STRING", TokenPriority.HIGH)\
+        .with_input(input)\
+        .generate_scanner()
+
+    result = scanner.next_token()
+    assert isinstance(result, Token)
+    assert result.type == "STRING"
+    assert result.value == 'A 10 20 B 30'
+
+
 def test_invalid_token():
     input = "10"
 

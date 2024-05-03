@@ -10,17 +10,6 @@ class RegexParser:
         self.peek_symbol = self.regex_lexer.next_symbol()
         self.current_level = 0
 
-    def DEBUG_print_automata(self, automata: Automata, title: str | None):
-        if title:
-            print("---------- {} ----------".format(title))
-        else:
-            print("---------- Automata ----------")
-        print(automata)
-        if title:
-            print("---------- End of {} ----------".format(title))
-        else:
-            print("---------- End of Automata ----------")
-
     def parse(self, return_to: int | None = None) -> Automata:
         automata = Automata()
         automata.return_to = return_to

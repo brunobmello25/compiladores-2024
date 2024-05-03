@@ -6,6 +6,20 @@ from src.regex.regex_lexer import RegexLexer
 from src.regex.regex_parser import RegexParser
 
 
+def test_regex_parse_string():
+    State.state_counter = 0
+
+    nfa = RegexParser(RegexLexer('"(a|b)*"')).parse()
+    dfa = DFAConverter(nfa).get_dfa()
+
+    max = 3
+    combinations = [''.join(p) for i in range(max + 1)
+                    for p in itertools.product("ab", repeat=i)]
+
+    for combination in combinations:
+        assert dfa.check(f'"{combination}"')
+
+
 def test_parse_multiple_ors_with_postfix():
     State.state_counter = 0
 

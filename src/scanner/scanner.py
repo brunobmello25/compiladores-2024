@@ -51,6 +51,7 @@ class Scanner:
         longest_accepting_length = 0
         last_accepting_info = None
         start_pos = self.pos
+
         while self.pos < len(self.input):
             char = self.input[self.pos]
             if char.isspace():

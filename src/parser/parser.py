@@ -1,6 +1,5 @@
 from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
-from src.scanner.scanner import Scanner
-from src.scanner.token import Token
+from src.scanner.scanner import Scanner, Token
 
 
 class Parser:
@@ -9,7 +8,9 @@ class Parser:
         self.advance()
 
     def advance(self):
-        self.current_token: Token = self.scanner.next_token()
+        result = self.scanner.next_token()
+        if isinstance(result, Token):
+            self.current_token: Token = result
 
     def expect(self, token_type) -> str:
         if self.current_token.type == token_type:
@@ -46,7 +47,7 @@ class Parser:
     def parse_assignment(self) -> Assignment:
         self.expect('LET')
         var_name = self.expect("IDENTIFIER")
-        self.expect('EQUALS')
+        self.expect('ASSIGNMENT')
         expr = self.parse_expression()
         return Assignment(variable=var_name, value=expr)
 

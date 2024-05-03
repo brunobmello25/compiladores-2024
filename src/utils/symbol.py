@@ -22,6 +22,7 @@ class SymbolType(Enum):
     ILLEGAL = "ILLEGAL"
     SLASH = "/"
     HIFEN = "-"
+    QUOTE = '"'
     ESCAPED = "\\"
 
 
@@ -41,6 +42,7 @@ class Symbol:
             SymbolType.ESCAPED,
             SymbolType.SLASH,
             SymbolType.HIFEN,
+            SymbolType.QUOTE,
         ]
 
     def is_postfix_operator(self):
