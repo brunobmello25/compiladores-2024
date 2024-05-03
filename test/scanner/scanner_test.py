@@ -1,6 +1,18 @@
-from src.scanner.scanner import Token
+from src.scanner.scanner import LexicalError, Token
 from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
+
+
+def test_invalid_token():
+    input = "10"
+
+    scanner = ScannerGenerator()\
+        .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+        .with_input(input)\
+        .generate_scanner()
+
+    result = scanner.next_token()
+    assert isinstance(result, LexicalError)
 
 
 def test_next_token():

@@ -61,6 +61,7 @@ class Scanner:
                 self.pos += 1  # Pula caracter inválido
                 self.automata.reset()
                 continue
+
             accepting_info = self.automata.get_accepting_info()
             if accepting_info is not None:
                 longest_accepting_length = self.pos - start_pos + 1
