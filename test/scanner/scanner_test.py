@@ -16,7 +16,7 @@ def test_next_token():
         .add_token("\\*", "MULTIPLICATION", TokenPriority.HIGH)\
         .add_token("/", "DIVISION", TokenPriority.HIGH)\
         .add_token("-", "SUBTRACTION", TokenPriority.HIGH)\
-        .add_token("=", "EQUALS", TokenPriority.HIGH)\
+        .add_token("=", "ASSIGNMENT", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
@@ -24,12 +24,12 @@ def test_next_token():
         ("10", "NUMBER", TokenPriority.HIGH),
         ("LET", "LET", TokenPriority.HIGH),
         ("RESULT", "IDENTIFIER", TokenPriority.LOW),
-        ("=", "EQUALS", TokenPriority.HIGH),
+        ("=", "ASSIGNMENT", TokenPriority.HIGH),
         ("(", "LPAREN", TokenPriority.HIGH),
         ("A", "IDENTIFIER", TokenPriority.LOW),
         ("+", "ADDITION", TokenPriority.HIGH),
         ("B", "IDENTIFIER", TokenPriority.LOW),
-        (")", "EQUALS", TokenPriority.HIGH),
+        (")", "RPAREN", TokenPriority.HIGH),
         ("*", "MULTIPLICATION", TokenPriority.HIGH),
         ("(", "LPAREN", TokenPriority.HIGH),
         ("(", "LPAREN", TokenPriority.HIGH),
