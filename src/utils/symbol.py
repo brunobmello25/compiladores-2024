@@ -24,6 +24,7 @@ class SymbolType(Enum):
     HIFEN = "-"
     QUOTE = '"'
     ESCAPED = "\\"
+    SPACE = " "
 
 
 class Symbol:
@@ -43,6 +44,7 @@ class Symbol:
             SymbolType.SLASH,
             SymbolType.HIFEN,
             SymbolType.QUOTE,
+            SymbolType.SPACE,
         ]
 
     def is_postfix_operator(self):

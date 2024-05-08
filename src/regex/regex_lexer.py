@@ -10,6 +10,10 @@ class RegexLexer:
         if self.pos >= len(self.input):
             return Symbol(SymbolType.EOF, SymbolType.EOF.value)
 
+        if self.input[self.pos] == ' ':
+            self.pos += 1
+            return Symbol(SymbolType.SPACE, SymbolType.SPACE.value)
+
         if self.input[self.pos] == '"':
             self.pos += 1
             return Symbol(SymbolType.QUOTE, SymbolType.QUOTE.value)

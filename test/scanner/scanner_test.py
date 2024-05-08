@@ -6,10 +6,26 @@ from src.scanner.token_priority import TokenPriority
 def test_parse_string():
     input = '"A 10 20 B 30"'
     scanner = ScannerGenerator()\
-        .add_token('"([A-z]|[0-9])*"', "STRING", TokenPriority.HIGH)\
+        .add_token('\\"([A-z]|[0-9]| )*\\"', "STRING", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
+    # TODO: apagar isso quando o scanner funcionar com string
+    # assert scanner.automata is not None
+    # result = scanner.automata.check_final_state('"banana"')
+    # assert result[0]
+    # assert result[1].token_type == "STRING"
+    # assert result[1].token_priority == TokenPriority.HIGH
+    # result = scanner.automata.check_final_state('""')
+    # assert result[0]
+    # assert result[1].token_type == "STRING"
+    # assert result[1].token_priority == TokenPriority.HIGH
+    # result = scanner.automata.check_final_state('"  "')
+    # assert result[0]
+    # assert result[1].token_type == "STRING"
+    # assert result[1].token_priority == TokenPriority.HIGH
+
+    # TODO: isso aqui ta dando mt ruim, melhor focar aqui
     result = scanner.next_token()
     assert isinstance(result, Token)
     assert result.type == "STRING"
