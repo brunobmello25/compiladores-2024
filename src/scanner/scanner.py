@@ -14,6 +14,9 @@ class Token(ScannerResult):
     value: str
     priority: TokenPriority
 
+    def is_eof(self):
+        return self.type == "EOF"
+
 
 @dataclass
 class LexicalError(ScannerResult):
@@ -22,65 +25,56 @@ class LexicalError(ScannerResult):
 
 
 class Scanner:
-    def __init__(self):
-        self.automata: DFA | None = None
-        self.input: str | None = None
-        self.pos = 0
-        self.errors: List[LexicalError] = []
-
-    def with_input(self, input: str) -> "Scanner":
+    def __init__(self, dfa: DFA, input: str = ""):
+        self.dfa = dfa
         self.input = input
-        return self
+        self.reset()
+        self.errors: List[LexicalError] = []
+        self.position = 0
+        self.last_accepting_position: int | None = None
+        self.last_accepting_buffer: str | None = None
 
-    def with_automata(self, automata: DFA) -> "Scanner":
-        self.automata = automata
-        return self
+    def reset(self):
+        self.buffer = ""
+        self.dfa.reset()
+        self.last_accepting_buffer = None
+        self.last_accepting_position = None
 
-    def next_token(self) -> Token | LexicalError:
-        if self.input is None or self.automata is None:
-            raise Exception(
-                "Scanner not initialized. You must call '.with_automata' and '.with_input' first.")
-
-        while self.pos < len(self.input) and self.input[self.pos].isspace():
-            self.pos += 1
-
-        if self.pos >= len(self.input):
-            return Token("EOF", "EOF", TokenPriority.HIGH)
-
-        self.automata.reset()
-        longest_accepting_length = 0
-        last_accepting_info = None
-        start_pos = self.pos
-
-        while self.pos < len(self.input):
-            char = self.input[self.pos]
-            if char.isspace():
-                break  # para no primeiro espaço em branco após acumular um token
-            if not self.automata.transition(char):
-                self.errors.append(LexicalError(
-                    f"Invalid character {char}", self.pos))
-                self.pos += 1  # Pula caracter inválido
-                self.automata.reset()
+    def next_token(self) -> ScannerResult:
+        while self.position < len(self.input):
+            char = self.input[self.position]
+            if char.isspace() and not self.dfa.is_valid_transition(char):
+                # if self.current_state in self.dfa.accepting_states and self.buffer:
+                if self.dfa.is_accepting() and self.buffer:
+                    type, priority = self.dfa.get_accepting_state_info()
+                    token = Token(type, self.buffer, priority)
+                    self.reset()
+                    return token
+                # Skip whitespace and continue
+                self.position += 1
                 continue
 
-            accepting_info = self.automata.get_accepting_info()
-            if accepting_info is not None:
-                longest_accepting_length = self.pos - start_pos + 1
-                last_accepting_info = accepting_info
-                self.pos += 1
+            self.buffer += char
+            if self.dfa.is_valid_transition(char):
+                self.dfa.transition(char)
+                if self.position == len(self.input) - 1 or not self.dfa.is_valid_transition(self.input[self.position + 1]):
+                    if self.dfa.is_accepting():
+                        type, priority = self.dfa.get_accepting_state_info()
+                        token = Token(type, self.buffer, priority)
+                        self.reset()
+                        self.position += 1
+                        return token
             else:
-                break
+                self.reset()
+            self.position += 1
 
-        if longest_accepting_length > 0 and last_accepting_info:
-            token_type, token_priority = last_accepting_info
-            token_value = self.input[start_pos:start_pos +
-                                     longest_accepting_length]
-            return Token(token_type, token_value, token_priority)
+        # Check if the last token needs to be returned
+        if self.dfa.is_accepting() and self.buffer:
+            type, priority = self.dfa.get_accepting_state_info()
+            token = Token(type, self.buffer, priority)
+            self.reset()
+            return token
+        elif self.buffer:
+            return LexicalError("Invalid token", self.position - len(self.buffer))
 
-        if self.errors:
-            return self.errors.pop(0)
-
-        if self.pos > start_pos:
-            return LexicalError("No valid token found", start_pos)
-
-        return LexicalError("No valid token found and no specific error identified", self.pos)
+        return Token("EOF", "", TokenPriority.EOF)

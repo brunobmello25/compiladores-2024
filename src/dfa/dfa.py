@@ -31,20 +31,27 @@ class DFA:
             )
             print(f"  {start.name} --[{symbol_display}]--> {end.name}")
 
-    def transition(self, symbol: str) -> bool:
+    def transition(self, symbol: str) -> State:
         if (self.current_state, symbol) in self.transition_function:
             self.current_state = self.transition_function[(
                 self.current_state, symbol)]
-            return True
-        return False
+            return self.current_state
+        raise Exception(
+            f"Invalid transition from {self.current_state.name} with symbol {symbol}")
 
-    def get_accepting_info(self) -> Tuple[str, TokenPriority] | None:
-        if self.current_state in self.accept_states:
-            if self.current_state.token_type is None or self.current_state.token_priority is None:
-                raise Exception(
-                    f"Token type or priority not set for state {self.current_state.name}")
-            return self.current_state.token_type, self.current_state.token_priority
-        return None
+    def is_accepting(self) -> bool:
+        return self.current_state in self.accept_states
+
+    def is_valid_transition(self, symbol: str) -> bool:
+        return (self.current_state, symbol) in self.transition_function
+
+    def get_accepting_state_info(self) -> Tuple[str, TokenPriority]:
+        if not self.current_state in self.accept_states:
+            raise Exception("Current state is not an accepting state")
+        if self.current_state.token_type is None or self.current_state.token_priority is None:
+            raise Exception("Current state does not have a token associated")
+
+        return self.current_state.token_type, self.current_state.token_priority
 
     def reset(self):
         self.current_state = self.start_state

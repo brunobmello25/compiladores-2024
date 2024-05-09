@@ -10,17 +10,17 @@ def test_parse_string_and_symbols():
         .with_input("")\
         .generate_scanner()
 
-    assert scanner.automata is not None
-    result = scanner.automata.check_final_state('"banana"')
+    assert scanner.dfa is not None
+    result = scanner.dfa.check_final_state('"banana"')
     assert result[0]
     assert result[1].token_type == "STRING"
     assert result[1].token_priority == TokenPriority.HIGH
-    result = scanner.automata.check_final_state('banana')
+    result = scanner.dfa.check_final_state('banana')
     assert result[0]
     assert result[1].token_type == "IDENTIFIER"
     assert result[1].token_priority == TokenPriority.LOW
-    assert not scanner.automata.check('"banana')
-    assert not scanner.automata.check('banana"')
+    assert not scanner.dfa.check('"banana')
+    assert not scanner.dfa.check('banana"')
 
 
 def test_parse_string():
