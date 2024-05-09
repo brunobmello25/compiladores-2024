@@ -3,6 +3,26 @@ from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
 
 
+def test_parse_string_and_symbols():
+    scanner = ScannerGenerator()\
+        .add_token("\"([A-z]|[0-9]| )*\"", "STRING", TokenPriority.HIGH)\
+        .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+        .with_input("")\
+        .generate_scanner()
+
+    assert scanner.automata is not None
+    result = scanner.automata.check_final_state('"banana"')
+    assert result[0]
+    assert result[1].token_type == "STRING"
+    assert result[1].token_priority == TokenPriority.HIGH
+    result = scanner.automata.check_final_state('banana')
+    assert result[0]
+    assert result[1].token_type == "IDENTIFIER"
+    assert result[1].token_priority == TokenPriority.LOW
+    assert not scanner.automata.check('"banana')
+    assert not scanner.automata.check('banana"')
+
+
 def test_parse_string():
     input = '"A 10 20 B 30"'
     scanner = ScannerGenerator()\

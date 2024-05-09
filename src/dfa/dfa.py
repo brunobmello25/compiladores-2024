@@ -31,26 +31,6 @@ class DFA:
             )
             print(f"  {start.name} --[{symbol_display}]--> {end.name}")
 
-    def __str__(self):
-        output = ""
-
-        output += f"Start State: {self.start_state.name}\n"
-
-        output += "States: "
-        output += ", ".join(sorted(state.name for state in self.states))
-
-        output += "\nAccept States: "
-        output += ", ".join(sorted(state.name for state in self.accept_states))
-
-        output += "\nTransitions:\n"
-        output += "\n".join(
-            f"  {
-                start.name} --[{symbol if symbol is not None else 'ε'}]--> {end.name}"
-            for (start, symbol), end in self.transition_function.items()
-        )
-
-        return output
-
     def transition(self, symbol: str) -> bool:
         if (self.current_state, symbol) in self.transition_function:
             self.current_state = self.transition_function[(
