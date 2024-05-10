@@ -52,6 +52,9 @@ class Scanner:
                     return token
                 self.pos += 1
                 continue
+            elif char.isspace():
+                # FIXME: precisamos lidar com espaços em branco "válidos aqui"
+                pass
 
             if self.dfa.is_valid_transition(char):
                 self.buffer += char
