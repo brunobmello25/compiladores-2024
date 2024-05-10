@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import List
+from src.automata.state import State
 from src.dfa.dfa import DFA
 from src.scanner.token_priority import TokenPriority
 
@@ -30,7 +31,7 @@ class Scanner:
         self.input = input
         self.reset()
         self.errors: List[LexicalError] = []
-        self.position = 0
+        self.pos = 0
         self.last_accepting_position: int | None = None
         self.last_accepting_buffer: str | None = None
 
@@ -41,40 +42,49 @@ class Scanner:
         self.last_accepting_position = None
 
     def next_token(self) -> ScannerResult:
-        while self.position < len(self.input):
-            char = self.input[self.position]
-            if char.isspace() and not self.dfa.is_valid_transition(char):
-                # if self.current_state in self.dfa.accepting_states and self.buffer:
-                if self.dfa.is_accepting() and self.buffer:
-                    type, priority = self.dfa.get_accepting_state_info()
-                    token = Token(type, self.buffer, priority)
-                    self.reset()
-                    return token
-                # Skip whitespace and continue
-                self.position += 1
-                continue
+        self.reset()
+        while self.pos < len(self.input):
+            char = self.input[self.pos]
 
-            self.buffer += char
             if self.dfa.is_valid_transition(char):
+                self.buffer += char
                 self.dfa.transition(char)
-                if self.position == len(self.input) - 1 or not self.dfa.is_valid_transition(self.input[self.position + 1]):
-                    if self.dfa.is_accepting():
-                        type, priority = self.dfa.get_accepting_state_info()
-                        token = Token(type, self.buffer, priority)
-                        self.reset()
-                        self.position += 1
-                        return token
-            else:
-                self.reset()
-            self.position += 1
 
-        # Check if the last token needs to be returned
-        if self.dfa.is_accepting() and self.buffer:
-            type, priority = self.dfa.get_accepting_state_info()
-            token = Token(type, self.buffer, priority)
-            self.reset()
+                if self.dfa.is_accepting():
+                    self.last_accepting_buffer = self.buffer
+                    self.last_accepting_position = self.pos
+
+                elif self.last_accepting_buffer is not None:
+                    self._backtrack()
+                    token = self.get_accepting_token()
+                    return token
+
+                self.pos += 1
+            else:
+                if self.last_accepting_buffer is not None:
+                    self._backtrack()
+                    token = self.get_accepting_token()
+                    return token
+
+        if self.buffer and self.dfa.is_accepting():
+            token = self.get_accepting_token()
             return token
         elif self.buffer:
-            return LexicalError("Invalid token", self.position - len(self.buffer))
+            return LexicalError(f"Invalid token {self.buffer}", self.pos)
+        else:
+            return Token("EOF", "", TokenPriority.EOF)
 
-        return Token("EOF", "", TokenPriority.EOF)
+    def _backtrack(self):
+        if self.last_accepting_buffer is None or self.last_accepting_position is None:
+            raise Exception(
+                "Cannot backtrack to a position that was not accepting a token")
+        amount = len(self.buffer) - len(self.last_accepting_buffer)
+        self.dfa.backtrack(amount)
+        self.buffer = self.last_accepting_buffer
+        self.pos = self.last_accepting_position
+        self.last_accepting_buffer = None
+
+    def get_accepting_token(self) -> Token:
+        type, priority = self.dfa.get_accepting_state_info()
+        self.pos += 1
+        return Token(type, self.buffer, priority)

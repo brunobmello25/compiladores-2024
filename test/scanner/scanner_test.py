@@ -3,6 +3,27 @@ from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
 
 
+def test_scan_with_backtrack():
+    scanner = ScannerGenerator()\
+        .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+        .add_token("\\(", "LPAREN", TokenPriority.HIGH)\
+        .with_input("(ABC")\
+        .generate_scanner()
+
+    expected_tokens = [
+        ("(", "LPAREN", TokenPriority.HIGH),
+        ("ABC", "IDENTIFIER", TokenPriority.LOW),
+        ("", "EOF", TokenPriority.EOF),
+    ]
+
+    for expected_token in expected_tokens:
+        result = scanner.next_token()
+        assert isinstance(result, Token)
+        assert result.value == expected_token[0]
+        assert result.type == expected_token[1]
+        assert result.priority == expected_token[2]
+
+
 def test_parse_string_and_symbols():
     scanner = ScannerGenerator()\
         .add_token("\"([A-z]|[0-9]| )*\"", "STRING", TokenPriority.HIGH)\
