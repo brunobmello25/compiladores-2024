@@ -113,7 +113,7 @@ def test_parse_string():
     # assert result[1].token_type == "STRING"
     # assert result[1].token_priority == TokenPriority.HIGH
 
-    # TODO: isso aqui ta dando mt ruim, melhor focar aqui
+    # FIXME: isso aqui ta dando mt ruim, melhor focar aqui
     result = scanner.next_token()
     assert isinstance(result, Token)
     assert result.type == "STRING"

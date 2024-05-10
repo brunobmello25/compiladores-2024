@@ -7,6 +7,8 @@ from src.dfa.dfa import DFA
 
 @pytest.fixture
 def simple_dfa():
+    State.state_counter = 0
+
     # Set up a simple DFA
     q0 = State()
     q1 = State()
@@ -23,10 +25,12 @@ def simple_dfa():
 
 
 def test_simple_backtrack(simple_dfa):
+    State.state_counter = 0
+
     dfa = simple_dfa
     # Make some transitions
-    dfa.transition('a')  # s0 -> s1
-    dfa.transition('b')  # s1 -> s2
+    dfa.transition('a')  # q0 -> q1
+    dfa.transition('b')  # q1 -> q2
     assert dfa.current_state.name == 'q2'
 
     # Backtrack one step
@@ -39,6 +43,8 @@ def test_simple_backtrack(simple_dfa):
 
 
 def test_backtrack_too_many(simple_dfa):
+    State.state_counter = 0
+
     dfa = simple_dfa
     # Make one transition
     dfa.transition('a')  # s0 -> s1
@@ -49,6 +55,8 @@ def test_backtrack_too_many(simple_dfa):
 
 
 def test_backtrack_zero_steps(simple_dfa):
+    State.state_counter = 0
+
     dfa = simple_dfa
     # Make some transitions
     dfa.transition('a')  # s0 -> s1
