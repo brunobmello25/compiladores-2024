@@ -3,6 +3,53 @@ from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
 
 
+def test_scan_with_skipable_only_spaces():
+    scanner = ScannerGenerator()\
+        .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+        .with_input('A BC  D')\
+        .generate_scanner()
+
+    expected_tokens = [
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("BC", "IDENTIFIER", TokenPriority.LOW),
+        ("D", "IDENTIFIER", TokenPriority.LOW),
+        ("", "EOF", TokenPriority.EOF),
+        ("", "EOF", TokenPriority.EOF),
+    ]
+
+    for expected_token in expected_tokens:
+        result = scanner.next_token()
+        assert isinstance(result, Token)
+        assert result.value == expected_token[0]
+        assert result.type == expected_token[1]
+        assert result.priority == expected_token[2]
+
+
+# TODO: Tratar caso de strings
+# def test_scan_with_whitespace():
+#     scanner = ScannerGenerator()\
+#         .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
+#         .add_token('\\"([A-z]|[0-9]| )*\\"', "STRING", TokenPriority.HIGH)\
+#         .with_input('A B "uma string longa"')\
+#         .generate_scanner()
+#
+#     expected_tokens = [
+#         ("A", "IDENTIFIER", TokenPriority.LOW),
+#         ("B", "IDENTIFIER", TokenPriority.LOW),
+#         ("uma string", "STRING", TokenPriority.HIGH),
+#         ("", "EOF", TokenPriority.EOF),
+#         ("", "EOF", TokenPriority.EOF),
+#         ("", "EOF", TokenPriority.EOF),
+#     ]
+#
+#     for expected_token in expected_tokens:
+#         result = scanner.next_token()
+#         assert isinstance(result, Token)
+#         assert result.value == expected_token[0]
+#         assert result.type == expected_token[1]
+#         assert result.priority == expected_token[2]
+
+
 def test_scan_with_backtrack():
     scanner = ScannerGenerator()\
         .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\

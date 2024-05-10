@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import List
-from src.automata.state import State
 from src.dfa.dfa import DFA
 from src.scanner.token_priority import TokenPriority
 
@@ -45,6 +44,14 @@ class Scanner:
         self.reset()
         while self.pos < len(self.input):
             char = self.input[self.pos]
+
+            if char.isspace() and not self.dfa.is_valid_transition(char):
+                if self.dfa.is_accepting() and self.buffer:
+                    token = self.get_accepting_token()
+                    self.reset()
+                    return token
+                self.pos += 1
+                continue
 
             if self.dfa.is_valid_transition(char):
                 self.buffer += char
