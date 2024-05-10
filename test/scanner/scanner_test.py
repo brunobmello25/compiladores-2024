@@ -173,10 +173,10 @@ def test_next_token():
         ("+", "ADDITION", TokenPriority.HIGH),
         ("F", "IDENTIFIER", TokenPriority.LOW),
         (")", "RPAREN", TokenPriority.HIGH),
-        ("EOF", "EOF", TokenPriority.HIGH),
-        ("EOF", "EOF", TokenPriority.HIGH),
-        ("EOF", "EOF", TokenPriority.HIGH),
-        ("EOF", "EOF", TokenPriority.HIGH),
+        ("", "EOF", TokenPriority.EOF),
+        ("", "EOF", TokenPriority.EOF),
+        ("", "EOF", TokenPriority.EOF),
+        ("", "EOF", TokenPriority.EOF),
     ]
 
     for expected_token in expected_tokens:
