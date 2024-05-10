@@ -34,6 +34,8 @@ class Scanner:
         self.last_accepting_position: int | None = None
         self.last_accepting_buffer: str | None = None
 
+        self.last_seen_quote: str | None = None
+
     def reset(self):
         self.buffer = ""
         self.dfa.reset()
@@ -52,13 +54,27 @@ class Scanner:
                     return token
                 self.pos += 1
                 continue
-            elif char.isspace():
-                # FIXME: precisamos lidar com espaços em branco "válidos aqui"
-                pass
+            elif char.isspace() and not self.last_seen_quote:
+                if self.last_accepting_buffer is not None:
+                    token = self.get_accepting_token()
+                    return token
+                self.pos += 1
+                continue
+            elif char.isspace() and self.last_seen_quote:
+                self.buffer += char
+                self.dfa.transition(char)
+                self.pos += 1
+                continue
 
             if self.dfa.is_valid_transition(char):
                 self.buffer += char
                 self.dfa.transition(char)
+
+                if char == '"' or char == "'":
+                    if self.last_seen_quote == None:
+                        self.last_seen_quote = char
+                    else:
+                        self.last_seen_quote = None
 
                 if self.dfa.is_accepting():
                     self.last_accepting_buffer = self.buffer

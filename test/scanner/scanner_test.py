@@ -36,7 +36,7 @@ def test_scan_with_whitespace():
     expected_tokens = [
         ("A", "IDENTIFIER", TokenPriority.LOW),
         ("B", "IDENTIFIER", TokenPriority.LOW),
-        ("uma  string  longa", "STRING", TokenPriority.HIGH),
+        ('"uma  string  longa"', "STRING", TokenPriority.HIGH),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
@@ -71,24 +71,26 @@ def test_scan_with_backtrack():
         assert result.priority == expected_token[2]
 
 
-def test_parse_string_and_symbols():
+def test_scan_string_and_symbols():
     scanner = ScannerGenerator()\
         .add_token("\"([A-z]|[0-9]| )*\"", "STRING", TokenPriority.HIGH)\
         .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
-        .with_input("")\
+        .with_input('A BC "um dois tres" D')\
         .generate_scanner()
 
-    assert scanner.dfa is not None
-    result = scanner.dfa.check_final_state('"banana"')
-    assert result[0]
-    assert result[1].token_type == "STRING"
-    assert result[1].token_priority == TokenPriority.HIGH
-    result = scanner.dfa.check_final_state('banana')
-    assert result[0]
-    assert result[1].token_type == "IDENTIFIER"
-    assert result[1].token_priority == TokenPriority.LOW
-    assert not scanner.dfa.check('"banana')
-    assert not scanner.dfa.check('banana"')
+    expected_tokens = [
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("BC", "IDENTIFIER", TokenPriority.LOW),
+        ('"um dois tres"', "STRING", TokenPriority.HIGH),
+        ("D", "IDENTIFIER", TokenPriority.LOW),
+    ]
+
+    for expected_token in expected_tokens:
+        token = scanner.next_token()
+        assert isinstance(token, Token)
+        assert token.value == expected_token[0]
+        assert token.type == expected_token[1]
+        assert token.priority == expected_token[2]
 
 
 def test_parse_string():
@@ -117,7 +119,7 @@ def test_parse_string():
     result = scanner.next_token()
     assert isinstance(result, Token)
     assert result.type == "STRING"
-    assert result.value == 'A 10 20 B 30'
+    assert result.value == '"A 10 20 B 30"'
 
 
 def test_invalid_token():
