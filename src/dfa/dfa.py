@@ -1,5 +1,5 @@
 
-from typing import Dict, Set, Tuple
+from typing import Dict, List,  Set, Tuple
 from src.automata.state import State
 from src.scanner.token_priority import TokenPriority
 
@@ -12,6 +12,7 @@ class DFA:
         self.accept_states = accept_states
         self.alphabet = alphabet
         self.current_state = start_state
+        self.history: List[Tuple[State, str, State]] = []
 
     # TODO: convert to __str__
     def print(self):
@@ -31,10 +32,21 @@ class DFA:
             )
             print(f"  {start.name} --[{symbol_display}]--> {end.name}")
 
+    def backtrack(self, amount: int):
+        if amount > len(self.history):
+            raise Exception(f"Cannot backtrack {amount} steps; only {
+                            len(self.history)} moves recorded")
+
+        # Perform the backtrack operation
+        for _ in range(amount):
+            start, _, _ = self.history.pop()
+            self.current_state = start
+
     def transition(self, symbol: str) -> State:
         if (self.current_state, symbol) in self.transition_function:
-            self.current_state = self.transition_function[(
-                self.current_state, symbol)]
+            next_state = self.transition_function[(self.current_state, symbol)]
+            self.history.append((self.current_state, symbol, next_state))
+            self.current_state = next_state
             return self.current_state
         raise Exception(
             f"Invalid transition from {self.current_state.name} with symbol {symbol}")
@@ -55,6 +67,7 @@ class DFA:
 
     def reset(self):
         self.current_state = self.start_state
+        self.history.clear()
 
     def extend_alphabet(self, new_alphabet: Set[str]):
         new_state = State()
