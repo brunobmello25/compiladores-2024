@@ -2,12 +2,15 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 
+spaces = "    "
+
+
 @dataclass
 class ASTNode:
     """ Base class for all AST nodes. """
 
     def __str__(self, level=0):
-        return "    " * level + self.__class__.__name__
+        return spaces * level + self.__class__.__name__
 
 
 @dataclass
@@ -15,7 +18,7 @@ class Expression(ASTNode):
     """ Base class for expressions. """
 
     def __str__(self, level=0):
-        return "    " * level + self.__class__.__name__
+        return spaces * level + self.__class__.__name__
 
 
 @dataclass
@@ -25,9 +28,9 @@ class BinaryExpression(Expression):
     right: Expression
 
     def __str__(self, level=0):
-        return ("    " * level + "BinaryExpression:\n" +
+        return (spaces * level + "BinaryExpression:\n" +
                 self.left.__str__(level + 1) + "\n" +
-                "    " * (level + 1) + "Operator: " + self.operator + "\n" +
+                spaces * (level + 1) + "Operator: " + self.operator + "\n" +
                 self.right.__str__(level + 1))
 
 
@@ -37,7 +40,7 @@ class NumberLiteral(Expression):
     value: str
 
     def __str__(self, level=0):
-        return "    " * level + f"NumberLiteral: {self.value}"
+        return spaces * level + f"NumberLiteral: {self.value}"
 
 
 @dataclass
@@ -45,7 +48,7 @@ class StringLiteral(Expression):
     value: str
 
     def __str__(self, level=0):
-        return "    " * level + f"StringLiteral: {self.value}"
+        return spaces * level + f"StringLiteral: {self.value}"
 
 
 @dataclass
@@ -53,7 +56,7 @@ class VariableReference(Expression):
     name: str
 
     def __str__(self, level=0):
-        return "    " * level + f"VariableReference: {self.name}"
+        return spaces * level + f"VariableReference: {self.name}"
 
 
 @dataclass
@@ -62,8 +65,8 @@ class Assignment(ASTNode):
     value: Expression
 
     def __str__(self, level=0):
-        return ("    " * level + "Assignment:\n" +
-                "    " * (level + 1) + f"Variable: {self.variable}\n" +
+        return (spaces * level + "Assignment:\n" +
+                spaces * (level + 1) + f"Variable: {self.variable}\n" +
                 self.value.__str__(level + 1))
 
 
@@ -72,7 +75,7 @@ class PrintStatement(ASTNode):
     value: Expression
 
     def __str__(self, level=0):
-        return "    " * level + "PrintStatement:\n" + self.value.__str__(level + 1)
+        return spaces * level + "PrintStatement:\n" + self.value.__str__(level + 1)
 
 
 @dataclass
@@ -85,14 +88,14 @@ class IfStatement(ASTNode):
         then_str = self.then_statement.__str__(level + 2)
         if self.else_statement:
             else_str = self.else_statement.__str__(level + 2)
-            return ("    " * level + "IfStatement:\n" +
-                    "    " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
-                    "    " * (level + 1) + "Then:\n" + then_str + "\n" +
-                    "    " * (level + 1) + "Else:\n" + else_str)
+            return (spaces * level + "IfStatement:\n" +
+                    spaces * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    spaces * (level + 1) + "Then:\n" + then_str + "\n" +
+                    spaces * (level + 1) + "Else:\n" + else_str)
         else:
-            return ("    " * level + "IfStatement:\n" +
-                    "    " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
-                    "    " * (level + 1) + "Then:\n" + then_str)
+            return (spaces * level + "IfStatement:\n" +
+                    spaces * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    spaces * (level + 1) + "Then:\n" + then_str)
 
 
 @dataclass
@@ -111,12 +114,12 @@ class ForStatement(ASTNode):
         body_str = "\n".join(f"{stmt.__str__(
             level + 2)}" for stmt, _ in self.body)
         return (
-            "    " * level + "ForStatement:\n" +
-            "    " * (level + 1) + f"Variable: {self.variable}\n" +
-            "    " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
-            "    " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
-            "    " * (level + 1) + step_str + "\n" +
-            "    " * (level + 1) + "Body:\n" + body_str
+            spaces * level + "ForStatement:\n" +
+            spaces * (level + 1) + f"Variable: {self.variable}\n" +
+            spaces * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
+            spaces * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
+            spaces * (level + 1) + step_str + "\n" +
+            spaces * (level + 1) + "Body:\n" + body_str
         )
 
 
@@ -127,7 +130,7 @@ class Program(ASTNode):
     def __str__(self, level=0):
         def print_stmt(stmt: ASTNode, line: int):
             output = ""
-            output += "    " * level + f"Line: {line}\n"
+            output += spaces * level + f"Line: {line}\n"
             output += stmt.__str__(level)
             return output
 
