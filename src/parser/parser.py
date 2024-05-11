@@ -5,12 +5,20 @@ from src.scanner.scanner import Scanner, Token
 class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner = scanner
-        self.advance()
+        self.errors = []  # Initialize an errors list to store any lexical errors
+        self.current_token = self.fetch_next_valid_token()
+        self.peek_token = self.fetch_next_valid_token()
 
     def advance(self):
-        result = self.scanner.next_token()
-        if isinstance(result, Token):
-            self.current_token: Token = result
+        self.current_token = self.peek_token
+        self.peek_token = self.fetch_next_valid_token()
+
+    def fetch_next_valid_token(self) -> Token:
+        token = self.scanner.next_token()
+        while not isinstance(token, Token):
+            self.errors.append(token)
+            token = self.scanner.next_token()
+        return token
 
     def expect(self, token_type) -> str:
         if self.current_token.type == token_type:
