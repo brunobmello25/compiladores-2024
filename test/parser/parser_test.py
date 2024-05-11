@@ -103,7 +103,11 @@ def test_parse_basic_language():
             120 NEXT I
             130 FOR I = 1 TO 9 STEP 2
             140 PRINT A + B
-            150 NEXT I'''
+            150 NEXT I
+            160 FOR I = 1 TO 10
+            170 PRINT A + B
+            180 A = A + 1
+            190 NEXT I'''
 
     scanner = ScannerGenerator()\
         .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
@@ -187,7 +191,6 @@ def test_parse_basic_language():
         else_statement=PrintStatement(StringLiteral('"TRES"')),
     )
 
-    # 80 IF A THEN IF B THEN PRINT "X'''
     stmt = result.statements[7][0]
     assert isinstance(stmt, IfStatement)
     assert stmt == IfStatement(
@@ -200,7 +203,6 @@ def test_parse_basic_language():
         else_statement=None
     )
 
-    # 90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"'''
     stmt = result.statements[8][0]
     assert isinstance(stmt, IfStatement)
     assert stmt == IfStatement(
@@ -213,9 +215,6 @@ def test_parse_basic_language():
         else_statement=None
     )
 
-    # 100 FOR I = 1 TO 10
-    # 110 PRINT I
-    # 120 NEXT I'''
     stmt = result.statements[9][0]
     assert isinstance(stmt, ForStatement)
     assert stmt == ForStatement(
@@ -229,9 +228,6 @@ def test_parse_basic_language():
 
     )
 
-    # 130 FOR I = 1 TO 9 STEP = 2
-    # 140 PRINT A + B
-    # 150 NEXT I'''
     stmt = result.statements[10][0]
     assert isinstance(stmt, ForStatement)
     assert stmt == ForStatement(
@@ -248,8 +244,23 @@ def test_parse_basic_language():
         ]
     )
 
-    # TODO: parse a for line this:
-    # 100 FOR I = 1 TO 10
-    # 110 PRINT I
-    # 120 A = A + 1
-    # 130 NEXT I'''
+    stmt = result.statements[11][0]
+    assert isinstance(stmt, ForStatement)
+    assert stmt == ForStatement(
+        variable="I",
+        start=NumberLiteral("1"),
+        end=NumberLiteral("10"),
+        step=None,
+        body=[
+            (PrintStatement(BinaryExpression(
+                left=VariableReference("A"),
+                operator="ADDITION",
+                right=VariableReference("B"),
+            )), '170'),
+            (Assignment("A", BinaryExpression(
+                left=VariableReference("A"),
+                operator="ADDITION",
+                right=NumberLiteral("1"),
+            )), '180'),
+        ]
+    )

@@ -1,11 +1,12 @@
+from typing import List
 from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, ForStatement, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
-from src.scanner.scanner import Scanner, Token
+from src.scanner.scanner import LexicalError, Scanner, Token
 
 
 class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner = scanner
-        self.errors = []  # Initialize an errors list to store any lexical errors
+        self.lexical_errors: List[LexicalError] = []
         self.current_token = self.fetch_next_valid_token()
         self.peek_token = self.fetch_next_valid_token()
 
@@ -16,7 +17,8 @@ class Parser:
     def fetch_next_valid_token(self) -> Token:
         token = self.scanner.next_token()
         while not isinstance(token, Token):
-            self.errors.append(token)
+            assert isinstance(token, LexicalError)
+            self.lexical_errors.append(token)
             token = self.scanner.next_token()
         return token
 
@@ -84,6 +86,8 @@ class Parser:
             return self.parse_if_statement()
         elif self.current_token.type == "FOR":
             return self.parse_for_statement()
+        elif self.current_token.type == 'IDENTIFIER' and self.peek_token.type == 'ASSIGNMENT':
+            return self.parse_assignment(with_let=False)
         else:
             raise Exception("Syntax Error: Unrecognized statement")
 
@@ -109,8 +113,9 @@ class Parser:
         expr = self.parse_expression()
         return PrintStatement(value=expr)
 
-    def parse_assignment(self) -> Assignment:
-        self.expect('LET')
+    def parse_assignment(self, with_let=True) -> Assignment:
+        if with_let:
+            self.expect('LET')
         var_name = self.expect("IDENTIFIER")
         self.expect('ASSIGNMENT')
         expr = self.parse_expression()
