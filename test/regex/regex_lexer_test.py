@@ -47,8 +47,6 @@ def test_next_symbol():
 
     for expected_symbol in expected_symbols:
         symbol = lexer.next_symbol()
-        if symbol is None:
-            print(expected_symbol.value, expected_symbol.type)
         assert symbol.type == expected_symbol.type
         assert symbol.value == expected_symbol.value
 
