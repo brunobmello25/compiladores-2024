@@ -26,18 +26,20 @@ def test_scan_with_skipable_only_spaces():
 
 
 def test_scan_with_whitespace():
-    input = 'A  B  "uma  string  longa"'
+    input = 'A  B  "uma  string  longa" \'outra string\''
 
     scanner = ScannerGenerator()\
         .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
-        .add_token('\\"([A-z]|[0-9]| )*\\"', "STRING", TokenPriority.HIGH)\
+        .add_token('\\"([A-z]|[0-9]| )*\\"', "STRING_DOUBLE", TokenPriority.HIGH)\
+        .add_token("\\'([A-z]|[0-9]| )*\\'", "STRING_SINGLE", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
     expected_tokens = [
         ("A", "IDENTIFIER", TokenPriority.LOW),
         ("B", "IDENTIFIER", TokenPriority.LOW),
-        ('"uma  string  longa"', "STRING", TokenPriority.HIGH),
+        ('"uma  string  longa"', "STRING_DOUBLE", TokenPriority.HIGH),
+        ("'outra string'", "STRING_SINGLE", TokenPriority.HIGH),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
