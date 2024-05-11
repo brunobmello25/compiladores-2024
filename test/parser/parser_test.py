@@ -1,4 +1,4 @@
-from src.parser.ast import Assignment, BinaryExpression, IfStatement, NumberLiteral, PrintStatement, StringLiteral, VariableReference
+from src.parser.ast import Assignment, BinaryExpression, ForStatement, IfStatement, NumberLiteral, PrintStatement, StringLiteral, VariableReference
 from src.parser.parser import Parser
 from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
@@ -97,7 +97,13 @@ def test_parse_basic_language():
             60 PRINT A + B
             70 IF A > B THEN IF C < D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"
             80 IF A THEN IF B THEN PRINT "X"
-            90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"'''
+            90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"
+            100 FOR I = 1 TO 10
+            110 PRINT I
+            120 NEXT I
+            130 FOR I = 1 TO 9 STEP 2
+            140 PRINT A + B
+            150 NEXT I'''
 
     scanner = ScannerGenerator()\
         .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
@@ -121,6 +127,10 @@ def test_parse_basic_language():
         .add_token("\\<", "LT", TokenPriority.HIGH)\
         .add_token("\\>=", "GTE", TokenPriority.HIGH)\
         .add_token("\\<=", "LTE", TokenPriority.HIGH)\
+        .add_token("FOR", "FOR", TokenPriority.HIGH)\
+        .add_token("NEXT", "NEXT", TokenPriority.HIGH)\
+        .add_token("TO", "TO", TokenPriority.HIGH)\
+        .add_token("STEP", "STEP", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
@@ -179,6 +189,7 @@ def test_parse_basic_language():
 
     # 80 IF A THEN IF B THEN PRINT "X'''
     stmt = result.statements[7][0]
+    assert isinstance(stmt, IfStatement)
     assert stmt == IfStatement(
         condition=VariableReference("A"),
         then_statement=IfStatement(
@@ -191,6 +202,7 @@ def test_parse_basic_language():
 
     # 90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"'''
     stmt = result.statements[8][0]
+    assert isinstance(stmt, IfStatement)
     assert stmt == IfStatement(
         condition=VariableReference("A"),
         then_statement=IfStatement(
@@ -200,3 +212,44 @@ def test_parse_basic_language():
         ),
         else_statement=None
     )
+
+    # 100 FOR I = 1 TO 10
+    # 110 PRINT I
+    # 120 NEXT I'''
+    stmt = result.statements[9][0]
+    assert isinstance(stmt, ForStatement)
+    assert stmt == ForStatement(
+        variable="I",
+        start=NumberLiteral("1"),
+        end=NumberLiteral("10"),
+        step=None,
+        body=[
+            (PrintStatement(VariableReference("I")), '110'),
+        ]
+
+    )
+
+    # 130 FOR I = 1 TO 9 STEP = 2
+    # 140 PRINT A + B
+    # 150 NEXT I'''
+    stmt = result.statements[10][0]
+    assert isinstance(stmt, ForStatement)
+    assert stmt == ForStatement(
+        variable="I",
+        start=NumberLiteral("1"),
+        end=NumberLiteral("9"),
+        step=NumberLiteral("2"),
+        body=[
+            (PrintStatement(BinaryExpression(
+                left=VariableReference("A"),
+                operator="ADDITION",
+                right=VariableReference("B"),
+            )), '140'),
+        ]
+    )
+
+    # TODO: parse a for line this:
+    # 100 FOR I = 1 TO 10
+    # 110 PRINT I
+    # 120 A = A + 1
+    # 130 NEXT I'''

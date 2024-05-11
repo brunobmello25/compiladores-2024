@@ -96,6 +96,53 @@ class IfStatement(ASTNode):
 
 
 @dataclass
+class ForStatement(ASTNode):
+    variable: str
+    start: Expression
+    end: Expression
+    step: Expression | None
+    # Including line numbers in body statements
+    body: List[Tuple[ASTNode, str]]
+
+    def __str__(self, level=0):
+        # Default to step 1 if not provided
+        step_str = f"Step: {self.step.__str__(
+            level + 2)}" if self.step else "Step: 1"
+        body_str = "\n".join(f"Line {line}: {stmt.__str__(
+            level + 1)}" for stmt, line in self.body)
+        return (
+            "  " * level + "ForStatement:\n" +
+            "  " * (level + 1) + f"Variable: {self.variable}\n" +
+            "  " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
+            "  " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
+            "  " * (level + 1) + step_str + "\n" +
+            "  " * (level + 1) + "Body:\n" + body_str
+        )
+
+# @dataclass
+# class ForStatement(ASTNode):
+#     variable: str
+#     start: Expression
+#     end: Expression
+#     step: Expression | None
+#     body: List[ASTNode]
+#
+#     def __str__(self, level=0):
+#         # Default to step 1 if not provided
+#         step_str = f"Step: {self.step.__str__(
+#             level + 2)}" if self.step else "Step: 1"
+#         body_str = "\n".join(stmt.__str__(level + 1) for stmt in self.body)
+#         return (
+#             "  " * level + "ForStatement:\n" +
+#             "  " * (level + 1) + f"Variable: {self.variable}\n" +
+#             "  " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
+#             "  " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
+#             "  " * (level + 1) + step_str + "\n" +
+#             "  " * (level + 1) + "Body:\n" + body_str
+#         )
+
+
+@dataclass
 class Program(ASTNode):
     statements: List[Tuple[ASTNode, int]]
 

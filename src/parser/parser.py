@@ -1,4 +1,4 @@
-from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
+from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, ForStatement, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
 from src.scanner.scanner import Scanner, Token
 
 
@@ -21,6 +21,14 @@ class Parser:
             raise Exception(f"Syntax Error: Expected {
                             token_type}, found {self.current_token.type}")
 
+    def expect_with_value(self, token_type: str, value: str) -> str:
+        if self.current_token.type == token_type and self.current_token.value == value:
+            self.advance()
+            return value
+        else:
+            raise Exception(f"Syntax Error: Expected {token_type} with value {value}, found {
+                            self.current_token.type} with value {self.current_token.value}")
+
     def parse(self) -> Program:
         statements = []
         while self.current_token.type != 'EOF':
@@ -31,6 +39,34 @@ class Parser:
                 statements.append(tuple([statement, line_number]))
         return Program(statements=statements)
 
+    def parse_for_statement(self) -> ForStatement:
+        self.expect('FOR')
+        var_name = self.expect('IDENTIFIER')
+        self.expect('ASSIGNMENT')
+        start_expr = self.parse_expression()
+        self.expect('TO')
+        end_expr = self.parse_expression()
+
+        step_expr = None
+        if self.current_token.type == 'STEP':
+            self.advance()
+            step_expr = self.parse_expression()
+
+        line_number = self.expect('NUMBER')
+
+        body_statements = []
+        while self.current_token.type != 'NEXT':
+            stmt = self.parse_statement()
+            body_statements.append(tuple([stmt, line_number]))
+
+            line_number = self.expect('NUMBER')
+
+        self.expect('NEXT')
+
+        self.expect_with_value("IDENTIFIER", var_name)
+
+        return ForStatement(variable=var_name, start=start_expr, end=end_expr, step=step_expr, body=body_statements)
+
     def parse_statement(self) -> ASTNode:
         if self.current_token.type == 'LET':
             return self.parse_assignment()
@@ -38,6 +74,8 @@ class Parser:
             return self.parse_print_statement()
         elif self.current_token.type == "IF":
             return self.parse_if_statement()
+        elif self.current_token.type == "FOR":
+            return self.parse_for_statement()
         else:
             raise Exception("Syntax Error: Unrecognized statement")
 
