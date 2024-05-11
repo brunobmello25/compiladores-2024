@@ -40,4 +40,4 @@ class ScannerGenerator:
         for dfa in self.automatas[1:]:
             automata = DFAMerger(automata, dfa).merge()
 
-        return Scanner().with_input(self.input).with_automata(automata)
+        return Scanner(automata, self.input)

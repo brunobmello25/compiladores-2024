@@ -88,7 +88,7 @@ class DFAMerger:
             equivalent_state.token_priority = current_state[1].token_priority
         else:
             raise RuntimeError("Illegal State: Both token priorities must be different. Token {} has priority {} and token {} has priority {}".format(
-                current_state[0], a_priority, current_state[1], b_priority))
+                current_state[0].token_type, a_priority, current_state[1].token_type, b_priority))
 
     def _is_accept(self, states: Tuple[State, State]) -> bool:
         return states[0] in self.A.accept_states or states[1] in self.B.accept_states

@@ -1,5 +1,5 @@
 
-from typing import Dict, Set, Tuple
+from typing import Dict, List,  Set, Tuple
 from src.automata.state import State
 from src.scanner.token_priority import TokenPriority
 
@@ -11,6 +11,8 @@ class DFA:
         self.states = states
         self.accept_states = accept_states
         self.alphabet = alphabet
+        self.current_state = start_state
+        self.history: List[Tuple[State, str, State]] = []
 
     # TODO: convert to __str__
     def print(self):
@@ -30,25 +32,42 @@ class DFA:
             )
             print(f"  {start.name} --[{symbol_display}]--> {end.name}")
 
-    def __str__(self):
-        output = ""
+    def backtrack(self, amount: int):
+        if amount > len(self.history):
+            raise Exception(f"Cannot backtrack {amount} steps; only {
+                            len(self.history)} moves recorded")
 
-        output += f"Start State: {self.start_state.name}\n"
+        # Perform the backtrack operation
+        for _ in range(amount):
+            start, _, _ = self.history.pop()
+            self.current_state = start
 
-        output += "States: "
-        output += ", ".join(sorted(state.name for state in self.states))
+    def transition(self, symbol: str) -> State:
+        if (self.current_state, symbol) in self.transition_function:
+            next_state = self.transition_function[(self.current_state, symbol)]
+            self.history.append((self.current_state, symbol, next_state))
+            self.current_state = next_state
+            return self.current_state
+        raise Exception(
+            f"Invalid transition from {self.current_state.name} with symbol {symbol}")
 
-        output += "\nAccept States: "
-        output += ", ".join(sorted(state.name for state in self.accept_states))
+    def is_accepting(self) -> bool:
+        return self.current_state in self.accept_states
 
-        output += "\nTransitions:\n"
-        output += "\n".join(
-            f"  {
-                start.name} --[{symbol if symbol is not None else 'ε'}]--> {end.name}"
-            for (start, symbol), end in self.transition_function.items()
-        )
+    def is_valid_transition(self, symbol: str) -> bool:
+        return (self.current_state, symbol) in self.transition_function
 
-        return output
+    def get_accepting_state_info(self) -> Tuple[str, TokenPriority]:
+        if not self.current_state in self.accept_states:
+            raise Exception("Current state is not an accepting state")
+        if self.current_state.token_type is None or self.current_state.token_priority is None:
+            raise Exception("Current state does not have a token associated")
+
+        return self.current_state.token_type, self.current_state.token_priority
+
+    def reset(self):
+        self.current_state = self.start_state
+        self.history.clear()
 
     def extend_alphabet(self, new_alphabet: Set[str]):
         new_state = State()

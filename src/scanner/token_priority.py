@@ -3,6 +3,7 @@ from enum import Enum
 
 
 class TokenPriority(Enum):
+    EOF = 3
     HIGH = 2
     MEDIUM = 1
     LOW = 0
