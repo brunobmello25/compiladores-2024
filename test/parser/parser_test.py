@@ -96,7 +96,8 @@ def test_parse_basic_language():
             50 PRINT "SUM OF A AND B IS"
             60 PRINT A + B
             70 IF A > B THEN IF C < D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"
-            80 IF A THEN IF B THEN PRINT "X"'''
+            80 IF A THEN IF B THEN PRINT "X"
+            90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"'''
 
     scanner = ScannerGenerator()\
         .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
@@ -184,6 +185,18 @@ def test_parse_basic_language():
             condition=VariableReference("B"),
             then_statement=PrintStatement(StringLiteral('"X"')),
             else_statement=None
+        ),
+        else_statement=None
+    )
+
+    # 90 IF A THEN IF B THEN PRINT "X" ELSE PRINT "Y"'''
+    stmt = result.statements[8][0]
+    assert stmt == IfStatement(
+        condition=VariableReference("A"),
+        then_statement=IfStatement(
+            condition=VariableReference("B"),
+            then_statement=PrintStatement(StringLiteral('"X"')),
+            else_statement=PrintStatement(StringLiteral('"Y"'))
         ),
         else_statement=None
     )
