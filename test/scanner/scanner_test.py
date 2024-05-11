@@ -197,9 +197,9 @@ def test_scan_basic_language():
         .add_token("\\+", "ADDITION", TokenPriority.HIGH)\
         .add_token("\\>", "GREATER", TokenPriority.HIGH)\
         .add_token("\\*", "MULTIPLICATION", TokenPriority.HIGH)\
-        .add_token("/", "DIVISION", TokenPriority.HIGH)\
-        .add_token("-", "SUBTRACTION", TokenPriority.HIGH)\
-        .add_token("=", "ASSIGNMENT", TokenPriority.HIGH)\
+        .add_token("\\/", "DIVISION", TokenPriority.HIGH)\
+        .add_token("\\-", "SUBTRACTION", TokenPriority.HIGH)\
+        .add_token("\\=", "ASSIGNMENT", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
