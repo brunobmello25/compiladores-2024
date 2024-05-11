@@ -1,4 +1,4 @@
-from src.parser.ast import Assignment, BinaryExpression, NumberLiteral, PrintStatement, StringLiteral, VariableReference
+from src.parser.ast import Assignment, BinaryExpression, IfStatement, NumberLiteral, PrintStatement, StringLiteral, VariableReference
 from src.parser.parser import Parser
 from src.scanner.scanner_generator import ScannerGenerator
 from src.scanner.token_priority import TokenPriority
@@ -88,7 +88,14 @@ def test_complex_expression_parsing():
 
 
 def test_parse_basic_language():
-    input = '10 LET A = 5\n20 LET B = 10\n30 LET C = A + B\n40 PRINT C\n50 PRINT "SUM OF A AND B IS"\n60 PRINT A + B'
+    input = '''
+            10 LET A = 5
+            20 LET B = 10
+            30 LET C = A + B
+            40 PRINT C
+            50 PRINT "SUM OF A AND B IS"
+            60 PRINT A + B
+            70 IF A > B THEN IF C < D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"'''
 
     scanner = ScannerGenerator()\
         .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
@@ -96,13 +103,22 @@ def test_parse_basic_language():
         .add_token('"([A-z]|[0-9]| )*"', "STRING", TokenPriority.HIGH)\
         .add_token("LET", "LET", TokenPriority.HIGH)\
         .add_token("PRINT", "PRINT", TokenPriority.HIGH)\
+        .add_token("IF", "IF", TokenPriority.HIGH)\
+        .add_token("THEN", "THEN", TokenPriority.HIGH)\
+        .add_token("ELSE", "ELSE", TokenPriority.HIGH)\
         .add_token("\\(", "LPAREN", TokenPriority.HIGH)\
         .add_token("\\)", "RPAREN", TokenPriority.HIGH)\
         .add_token("\\+", "ADDITION", TokenPriority.HIGH)\
         .add_token("\\*", "MULTIPLICATION", TokenPriority.HIGH)\
-        .add_token("/", "DIVISION", TokenPriority.HIGH)\
-        .add_token("-", "SUBTRACTION", TokenPriority.HIGH)\
-        .add_token("=", "ASSIGNMENT", TokenPriority.HIGH)\
+        .add_token("\\/", "DIVISION", TokenPriority.HIGH)\
+        .add_token("\\-", "SUBTRACTION", TokenPriority.HIGH)\
+        .add_token("\\=", "ASSIGNMENT", TokenPriority.HIGH)\
+        .add_token("\\==", "EQUAL", TokenPriority.HIGH)\
+        .add_token("\\!=", "NE", TokenPriority.HIGH)\
+        .add_token("\\>", "GT", TokenPriority.HIGH)\
+        .add_token("\\<", "LT", TokenPriority.HIGH)\
+        .add_token("\\>=", "GTE", TokenPriority.HIGH)\
+        .add_token("\\<=", "LTE", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
@@ -125,7 +141,6 @@ def test_parse_basic_language():
     assert isinstance(stmt, PrintStatement)
     assert stmt == PrintStatement(VariableReference("C"))
 
-    # TODO: strings shouldn't have quotes in it's value
     stmt = result.statements[4][0]
     assert isinstance(stmt, PrintStatement)
     assert stmt == PrintStatement(StringLiteral('"SUM OF A AND B IS"'))
@@ -138,4 +153,24 @@ def test_parse_basic_language():
             operator="ADDITION",
             right=VariableReference("B"),
         )
+    )
+
+    stmt = result.statements[6][0]
+    assert isinstance(stmt, IfStatement)
+    assert stmt == IfStatement(
+        condition=BinaryExpression(
+            left=VariableReference("A"),
+            operator="GT",
+            right=VariableReference("B"),
+        ),
+        then_statement=IfStatement(
+            condition=BinaryExpression(
+                left=VariableReference("C"),
+                right=VariableReference("D"),
+                operator="LT",
+            ),
+            then_statement=PrintStatement(StringLiteral('"UM"')),
+            else_statement=PrintStatement(StringLiteral('"DOIS"')),
+        ),
+        else_statement=PrintStatement(StringLiteral('"TRES"')),
     )

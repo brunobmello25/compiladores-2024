@@ -181,7 +181,9 @@ def test_scan_basic_language():
                20 PRINT C
                30 PRINT "SUM OF A AND B IS"
                40 PRINT A + B
-               50 IF A > B THEN IF C > D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"'''
+               50 IF A > B THEN IF C > D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"
+               60 IF A <= B THEN IF C == D THEN PRINT "UM" ELSE PRINT "DOIS" ELSE PRINT "TRES"
+               70 IF A != B THEN PRINT A'''
 
     scanner = ScannerGenerator()\
         .add_token("[0-9]*", "NUMBER", TokenPriority.HIGH)\
@@ -195,11 +197,16 @@ def test_scan_basic_language():
         .add_token("\\(", "LPAREN", TokenPriority.HIGH)\
         .add_token("\\)", "RPAREN", TokenPriority.HIGH)\
         .add_token("\\+", "ADDITION", TokenPriority.HIGH)\
-        .add_token("\\>", "GREATER", TokenPriority.HIGH)\
         .add_token("\\*", "MULTIPLICATION", TokenPriority.HIGH)\
         .add_token("\\/", "DIVISION", TokenPriority.HIGH)\
         .add_token("\\-", "SUBTRACTION", TokenPriority.HIGH)\
         .add_token("\\=", "ASSIGNMENT", TokenPriority.HIGH)\
+        .add_token("\\==", "EQUAL", TokenPriority.HIGH)\
+        .add_token("\\!=", "NE", TokenPriority.HIGH)\
+        .add_token("\\>", "GT", TokenPriority.HIGH)\
+        .add_token("\\<", "LT", TokenPriority.HIGH)\
+        .add_token("\\<=", "LTE", TokenPriority.HIGH)\
+        .add_token("\\>=", "GTE", TokenPriority.HIGH)\
         .with_input(input)\
         .generate_scanner()
 
@@ -209,26 +216,30 @@ def test_scan_basic_language():
         ("A", "IDENTIFIER", TokenPriority.LOW),
         ("=", "ASSIGNMENT", TokenPriority.HIGH),
         ("5", "NUMBER", TokenPriority.HIGH),
+
         ("20", "NUMBER", TokenPriority.HIGH),
         ("PRINT", "PRINT", TokenPriority.HIGH),
         ("C", "IDENTIFIER", TokenPriority.LOW),
+
         ("30", "NUMBER", TokenPriority.HIGH),
         ("PRINT", "PRINT", TokenPriority.HIGH),
         ('"SUM OF A AND B IS"', "STRING", TokenPriority.HIGH),
+
         ("40", "NUMBER", TokenPriority.HIGH),
         ("PRINT", "PRINT", TokenPriority.HIGH),
         ("A", "IDENTIFIER", TokenPriority.LOW),
         ("+", "ADDITION", TokenPriority.HIGH),
         ("B", "IDENTIFIER", TokenPriority.LOW),
+
         ("50", "NUMBER", TokenPriority.HIGH),
         ("IF", "IF", TokenPriority.HIGH),
         ("A", "IDENTIFIER", TokenPriority.LOW),
-        (">", "GREATER", TokenPriority.HIGH),
+        (">", "GT", TokenPriority.HIGH),
         ("B", "IDENTIFIER", TokenPriority.LOW),
         ("THEN", "THEN", TokenPriority.HIGH),
         ("IF", "IF", TokenPriority.HIGH),
         ("C", "IDENTIFIER", TokenPriority.LOW),
-        (">", "GREATER", TokenPriority.HIGH),
+        (">", "GT", TokenPriority.HIGH),
         ("D", "IDENTIFIER", TokenPriority.LOW),
         ("THEN", "THEN", TokenPriority.HIGH),
         ("PRINT", "PRINT", TokenPriority.HIGH),
@@ -239,6 +250,36 @@ def test_scan_basic_language():
         ("ELSE", "ELSE", TokenPriority.HIGH),
         ("PRINT", "PRINT", TokenPriority.HIGH),
         ('"TRES"', "STRING", TokenPriority.HIGH),
+
+        ("60", "NUMBER", TokenPriority.HIGH),
+        ("IF", "IF", TokenPriority.HIGH),
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("<=", "LTE", TokenPriority.HIGH),
+        ("B", "IDENTIFIER", TokenPriority.LOW),
+        ("THEN", "THEN", TokenPriority.HIGH),
+        ("IF", "IF", TokenPriority.HIGH),
+        ("C", "IDENTIFIER", TokenPriority.LOW),
+        ("==", "EQUAL", TokenPriority.HIGH),
+        ("D", "IDENTIFIER", TokenPriority.LOW),
+        ("THEN", "THEN", TokenPriority.HIGH),
+        ("PRINT", "PRINT", TokenPriority.HIGH),
+        ('"UM"', "STRING", TokenPriority.HIGH),
+        ("ELSE", "ELSE", TokenPriority.HIGH),
+        ("PRINT", "PRINT", TokenPriority.HIGH),
+        ('"DOIS"', "STRING", TokenPriority.HIGH),
+        ("ELSE", "ELSE", TokenPriority.HIGH),
+        ("PRINT", "PRINT", TokenPriority.HIGH),
+        ('"TRES"', "STRING", TokenPriority.HIGH),
+
+        ("70", "NUMBER", TokenPriority.HIGH),
+        ("IF", "IF", TokenPriority.HIGH),
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("!=", "NE", TokenPriority.HIGH),
+        ("B", "IDENTIFIER", TokenPriority.LOW),
+        ("THEN", "THEN", TokenPriority.HIGH),
+        ("PRINT", "PRINT", TokenPriority.HIGH),
+        ("A", "IDENTIFIER", TokenPriority.LOW),
+        ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),
         ("", "EOF", TokenPriority.EOF),

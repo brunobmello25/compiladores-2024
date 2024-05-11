@@ -17,6 +17,9 @@ class Token(ScannerResult):
     def is_eof(self):
         return self.type == "EOF"
 
+    def is_string(self):
+        return self.type in ("STRING", "STRING_DOUBLE", "STRING_SINGLE")
+
 
 @dataclass
 class LexicalError(ScannerResult):
@@ -91,6 +94,10 @@ class Scanner:
                     self._backtrack()
                     token = self.get_accepting_token()
                     return token
+
+                err = LexicalError(f"Invalid character {char}", self.pos)
+                self.pos += 1
+                return err
 
         if self.buffer and self.dfa.is_accepting():
             token = self.get_accepting_token()

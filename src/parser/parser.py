@@ -1,4 +1,4 @@
-from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
+from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
 from src.scanner.scanner import Scanner, Token
 
 
@@ -36,8 +36,27 @@ class Parser:
             return self.parse_assignment()
         elif self.current_token.type == 'PRINT':
             return self.parse_print_statement()
+        elif self.current_token.type == "IF":
+            return self.parse_if_statement()
         else:
             raise Exception("Syntax Error: Unrecognized statement")
+
+    def parse_if_statement(self) -> IfStatement:
+        self.expect('IF')
+        condition = self.parse_expression()
+        self.expect('THEN')
+        then_statement = self.parse_statement()
+
+        else_statement = None
+        if self.current_token.type == 'ELSE':
+            self.advance()
+            else_statement = self.parse_statement()
+
+        return IfStatement(
+            condition=condition,
+            then_statement=then_statement,
+            else_statement=else_statement
+        )
 
     def parse_print_statement(self) -> PrintStatement:
         self.expect('PRINT')
@@ -52,7 +71,16 @@ class Parser:
         return Assignment(variable=var_name, value=expr)
 
     def parse_expression(self) -> Expression:
-        return self.parse_additive()
+        return self.parse_relational()
+
+    def parse_relational(self) -> Expression:
+        expr = self.parse_additive()
+        while self.current_token.type in ["EQUAL", "NE", "LTE", "GTE", "GT", "LT"]:
+            operator = self.current_token.type
+            self.advance()
+            right = self.parse_additive()
+            expr = BinaryExpression(left=expr, operator=operator, right=right)
+        return expr
 
     def parse_additive(self) -> Expression:
         expr = self.parse_multiplicative()
@@ -86,7 +114,7 @@ class Parser:
             expr = self.parse_expression()
             self.expect('RPAREN')  # match ')'
             return expr
-        elif self.current_token.type == "STRING":
+        elif self.current_token.is_string():
             value = self.current_token.value
             self.advance()
             return StringLiteral(value=value)
@@ -102,7 +130,7 @@ class Parser:
             name = self.current_token.value
             self.advance()
             return VariableReference(name=name)
-        elif self.current_token.type == 'STRING':
+        elif self.current_token.is_string():
             value = self.current_token.value
             self.advance()
             return StringLiteral(value=value)

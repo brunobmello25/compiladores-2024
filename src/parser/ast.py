@@ -76,6 +76,26 @@ class PrintStatement(ASTNode):
 
 
 @dataclass
+class IfStatement(ASTNode):
+    condition: Expression
+    then_statement: ASTNode
+    else_statement: ASTNode | None = None
+
+    def __str__(self, level=0):
+        then_str = self.then_statement.__str__(level + 1)
+        if self.else_statement:
+            else_str = self.else_statement.__str__(level + 1)
+            return ("  " * level + "IfStatement:\n" +
+                    "  " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    "  " * (level + 1) + "Then:\n" + then_str + "\n" +
+                    "  " * (level + 1) + "Else:\n" + else_str)
+        else:
+            return ("  " * level + "IfStatement:\n" +
+                    "  " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    "  " * (level + 1) + "Then:\n" + then_str)
+
+
+@dataclass
 class Program(ASTNode):
     statements: List[Tuple[ASTNode, int]]
 
