@@ -100,22 +100,6 @@ def test_parse_string():
         .with_input(input)\
         .generate_scanner()
 
-    # TODO: apagar isso quando o scanner funcionar com string
-    # assert scanner.automata is not None
-    # result = scanner.automata.check_final_state('"banana"')
-    # assert result[0]
-    # assert result[1].token_type == "STRING"
-    # assert result[1].token_priority == TokenPriority.HIGH
-    # result = scanner.automata.check_final_state('""')
-    # assert result[0]
-    # assert result[1].token_type == "STRING"
-    # assert result[1].token_priority == TokenPriority.HIGH
-    # result = scanner.automata.check_final_state('"  "')
-    # assert result[0]
-    # assert result[1].token_type == "STRING"
-    # assert result[1].token_priority == TokenPriority.HIGH
-
-    # FIXME: isso aqui ta dando mt ruim, melhor focar aqui
     result = scanner.next_token()
     assert isinstance(result, Token)
     assert result.type == "STRING"
