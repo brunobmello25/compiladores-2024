@@ -25,12 +25,13 @@ def test_scan_with_skipable_only_spaces():
         assert result.priority == expected_token[2]
 
 
-# TODO: Tratar caso de strings
 def test_scan_with_whitespace():
+    input = 'A  B  "uma  string  longa"'
+
     scanner = ScannerGenerator()\
         .add_token("[A-z]([A-z]|[0-9])*", "IDENTIFIER", TokenPriority.LOW)\
         .add_token('\\"([A-z]|[0-9]| )*\\"', "STRING", TokenPriority.HIGH)\
-        .with_input('A  B  "uma  string  longa"')\
+        .with_input(input)\
         .generate_scanner()
 
     expected_tokens = [
