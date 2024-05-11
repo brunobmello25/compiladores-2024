@@ -7,7 +7,7 @@ class ASTNode:
     """ Base class for all AST nodes. """
 
     def __str__(self, level=0):
-        return "  " * level + self.__class__.__name__
+        return "    " * level + self.__class__.__name__
 
 
 @dataclass
@@ -15,7 +15,7 @@ class Expression(ASTNode):
     """ Base class for expressions. """
 
     def __str__(self, level=0):
-        return "  " * level + self.__class__.__name__
+        return "    " * level + self.__class__.__name__
 
 
 @dataclass
@@ -25,9 +25,9 @@ class BinaryExpression(Expression):
     right: Expression
 
     def __str__(self, level=0):
-        return ("  " * level + "BinaryExpression:\n" +
+        return ("    " * level + "BinaryExpression:\n" +
                 self.left.__str__(level + 1) + "\n" +
-                "  " * (level + 1) + "Operator: " + self.operator + "\n" +
+                "    " * (level + 1) + "Operator: " + self.operator + "\n" +
                 self.right.__str__(level + 1))
 
 
@@ -37,7 +37,7 @@ class NumberLiteral(Expression):
     value: str
 
     def __str__(self, level=0):
-        return "  " * level + f"NumberLiteral: {self.value}"
+        return "    " * level + f"NumberLiteral: {self.value}"
 
 
 @dataclass
@@ -45,7 +45,7 @@ class StringLiteral(Expression):
     value: str
 
     def __str__(self, level=0):
-        return "  " * level + f"StringLiteral: {self.value}"
+        return "    " * level + f"StringLiteral: {self.value}"
 
 
 @dataclass
@@ -53,7 +53,7 @@ class VariableReference(Expression):
     name: str
 
     def __str__(self, level=0):
-        return "  " * level + f"VariableReference: {self.name}"
+        return "    " * level + f"VariableReference: {self.name}"
 
 
 @dataclass
@@ -62,8 +62,8 @@ class Assignment(ASTNode):
     value: Expression
 
     def __str__(self, level=0):
-        return ("  " * level + "Assignment:\n" +
-                "  " * (level + 1) + f"Variable: {self.variable}\n" +
+        return ("    " * level + "Assignment:\n" +
+                "    " * (level + 1) + f"Variable: {self.variable}\n" +
                 self.value.__str__(level + 1))
 
 
@@ -72,7 +72,7 @@ class PrintStatement(ASTNode):
     value: Expression
 
     def __str__(self, level=0):
-        return "  " * level + "PrintStatement:\n" + self.value.__str__(level + 1)
+        return "    " * level + "PrintStatement:\n" + self.value.__str__(level + 1)
 
 
 @dataclass
@@ -82,17 +82,17 @@ class IfStatement(ASTNode):
     else_statement: ASTNode | None = None
 
     def __str__(self, level=0):
-        then_str = self.then_statement.__str__(level + 1)
+        then_str = self.then_statement.__str__(level + 2)
         if self.else_statement:
-            else_str = self.else_statement.__str__(level + 1)
-            return ("  " * level + "IfStatement:\n" +
-                    "  " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
-                    "  " * (level + 1) + "Then:\n" + then_str + "\n" +
-                    "  " * (level + 1) + "Else:\n" + else_str)
+            else_str = self.else_statement.__str__(level + 2)
+            return ("    " * level + "IfStatement:\n" +
+                    "    " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    "    " * (level + 1) + "Then:\n" + then_str + "\n" +
+                    "    " * (level + 1) + "Else:\n" + else_str)
         else:
-            return ("  " * level + "IfStatement:\n" +
-                    "  " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
-                    "  " * (level + 1) + "Then:\n" + then_str)
+            return ("    " * level + "IfStatement:\n" +
+                    "    " * (level + 1) + "Condition:\n" + self.condition.__str__(level + 2) + "\n" +
+                    "    " * (level + 1) + "Then:\n" + then_str)
 
 
 @dataclass
@@ -108,38 +108,16 @@ class ForStatement(ASTNode):
         # Default to step 1 if not provided
         step_str = f"Step: {self.step.__str__(
             level + 2)}" if self.step else "Step: 1"
-        body_str = "\n".join(f"Line {line}: {stmt.__str__(
-            level + 1)}" for stmt, line in self.body)
+        body_str = "\n".join(f"{stmt.__str__(
+            level + 2)}" for stmt, _ in self.body)
         return (
-            "  " * level + "ForStatement:\n" +
-            "  " * (level + 1) + f"Variable: {self.variable}\n" +
-            "  " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
-            "  " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
-            "  " * (level + 1) + step_str + "\n" +
-            "  " * (level + 1) + "Body:\n" + body_str
+            "    " * level + "ForStatement:\n" +
+            "    " * (level + 1) + f"Variable: {self.variable}\n" +
+            "    " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
+            "    " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
+            "    " * (level + 1) + step_str + "\n" +
+            "    " * (level + 1) + "Body:\n" + body_str
         )
-
-# @dataclass
-# class ForStatement(ASTNode):
-#     variable: str
-#     start: Expression
-#     end: Expression
-#     step: Expression | None
-#     body: List[ASTNode]
-#
-#     def __str__(self, level=0):
-#         # Default to step 1 if not provided
-#         step_str = f"Step: {self.step.__str__(
-#             level + 2)}" if self.step else "Step: 1"
-#         body_str = "\n".join(stmt.__str__(level + 1) for stmt in self.body)
-#         return (
-#             "  " * level + "ForStatement:\n" +
-#             "  " * (level + 1) + f"Variable: {self.variable}\n" +
-#             "  " * (level + 1) + "Start:\n" + self.start.__str__(level + 2) + "\n" +
-#             "  " * (level + 1) + "End:\n" + self.end.__str__(level + 2) + "\n" +
-#             "  " * (level + 1) + step_str + "\n" +
-#             "  " * (level + 1) + "Body:\n" + body_str
-#         )
 
 
 @dataclass
@@ -149,7 +127,7 @@ class Program(ASTNode):
     def __str__(self, level=0):
         def print_stmt(stmt: ASTNode, line: int):
             output = ""
-            output += "  " * level + f"Line: {line}\n"
+            output += "    " * level + f"Line: {line}\n"
             output += stmt.__str__(level)
             return output
 
