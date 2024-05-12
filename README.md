@@ -40,7 +40,7 @@ O arquivo de entrada deve ser um programa na linguagem BASIC, e cada linha deve 
 
 O scanner deste compilador possui algumas limitações:
 
-- Para suportar strings no seu programa, é necessário que haja *obrigatóriamente* um token de  string com a regex `\"([A-z]|[0-9]| )\"` (assumindo que sua string possua espaços em branco). Isto porque o scanner utiliza um campo booleano para identificar se está processando o interior de uma string ou não, e baseado nesse booleano ele decide se vai ou não vai skippar espaços em branco.
+- Para suportar strings no seu programa, é necessário que haja *obrigatoriamente* um token de  string com a regex `\"([A-z]|[0-9]| )\"` (assumindo que sua string possua espaços em branco). Isto porque o scanner utiliza um campo booleano para identificar se está processando o interior de uma string ou não, e baseado nesse booleano ele decide se vai ou não vai skippar espaços em branco.
 
 ## Como rodar
 
