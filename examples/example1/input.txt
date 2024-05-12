@@ -17,3 +17,4 @@
 170 PRINT A + B
 180 A = A + 1
 190 NEXT I
+200 A = (B+C)*D+(E-F/G)

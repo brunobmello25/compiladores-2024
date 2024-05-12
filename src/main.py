@@ -16,8 +16,8 @@ def parse_arguments():
 
     parser.add_argument('--input-file', required=True,
                         help='Caminho para o arquivo de código para a entrada')
-    parser.add_argument('--regex-file', required=True,
-                        help='Caminho para o arquivo contendo expressões regulares')
+    parser.add_argument('--token-file', required=True,
+                        help='Caminho para o arquivo contendo as especificações de tokens')
 
     args = parser.parse_args()
 
@@ -30,13 +30,13 @@ def check_if_file_exists(file_path: str):
         sys.exit(1)
 
 
-def parse_regex_file(file_path) -> List[Tuple[str, str, TokenPriority]]:
+def parse_tokens_file(file_path) -> List[Tuple[str, str, TokenPriority]]:
     with open(file_path, 'r') as file:
         content = file.read().strip()
 
     blocks = content.split('\n\n')
 
-    regex_list = []
+    tokens = []
     for block in blocks:
         lines = block.strip().split('\n')
         if len(lines) == 3:
@@ -46,11 +46,11 @@ def parse_regex_file(file_path) -> List[Tuple[str, str, TokenPriority]]:
                 lines[1],
                 priority
             )
-            regex_list.append(regex_dict)
+            tokens.append(regex_dict)
         else:
             print(f"Warning: Skipping malformed block:\n{block}")
 
-    return regex_list
+    return tokens
 
 
 def parse_input_file(file_path: str) -> str:
@@ -58,11 +58,11 @@ def parse_input_file(file_path: str) -> str:
         return file.read().strip()
 
 
-def make_scanner(regexes: List[Tuple[str, str, TokenPriority]], input: str) -> Scanner:
+def make_scanner(tokens: List[Tuple[str, str, TokenPriority]], input: str) -> Scanner:
     scanner_generator = ScannerGenerator()
-    for reg in regexes:
+    for token in tokens:
         scanner_generator = scanner_generator.add_token(
-            reg[0],  reg[1], reg[2])
+            token[0],  token[1], token[2])
 
     scanner_generator = scanner_generator.with_input(input)
 
@@ -75,12 +75,12 @@ def main():
     args = parse_arguments()
 
     check_if_file_exists(args.input_file)
-    check_if_file_exists(args.regex_file)
+    check_if_file_exists(args.token_file)
 
-    regexes = parse_regex_file(args.regex_file)
+    tokens = parse_tokens_file(args.token_file)
     input = parse_input_file(args.input_file)
 
-    scanner = make_scanner(regexes, input)
+    scanner = make_scanner(tokens, input)
     parser = Parser(scanner)
     program = parser.parse()
 
