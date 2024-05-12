@@ -1,5 +1,47 @@
 # BASIC scanner e Parser
 
+## Especificação do arquivo de tokens
+
+O arquivo de tokens é composto de blocos de três linhas, separados por uma linha em branco, no seguinte formato:
+
+```txt
+REGEX1
+TYPE1
+PRIORITY1
+
+REGEX2
+TYPE2
+PRIORITY2
+```
+
+A primeira linha é a regex do token, a segunda o seu tipo e a terceira a prioridade. A prioridade deve ser, obrigatoriamente, `HIGH`, `MEDIUM` ou `LOW`. Aconselhamos utilizar apenas `HIGH` para tokens de palavras reservadas e `LOW` para demais palavras: a prioridade `MEDIUM` foi criada mais como uma garantia futura do que de fato por necessidade.
+
+### Regexes
+
+As regexes possuem os seguintes padrões:
+
+- `[A-Z]` para letras maiúsculas
+- `[a-z]` para letras minúsculas
+- `[A-z]` para letras maiúsculas e minúsculas
+- `[0-9]` para números
+- `\` seguido de algum símbolo para caracteres escapados (ex: `\+`, `\-`, `\[`, `\]`, `\(`, `\)` etc). Isto  inclui tanto caracteres especiais como `[` e `]` quanto caracteres que não sejam simples letras ou números, como `a` e `1`
+
+## Especificação do arquivo de entrada
+
+O arquivo de entrada deve ser um programa na linguagem BASIC, e cada linha deve ter, **obrigatoriamente** um número como primeiro token. Exemplo de programa em BASIC:
+
+```BASIC
+10 PRINT "HELLO WORLD"
+20 LET A = 10
+30 PRINT
+```
+
+## Limitações do scanner
+
+O scanner deste compilador possui algumas limitações:
+
+- Para suportar strings no seu programa, é necessário que haja *obrigatóriamente* um token de  string com a regex `\"([A-z]|[0-9]| )\"` (assumindo que sua string possua espaços em branco). Isto porque o scanner utiliza um campo booleano para identificar se está processando o interior de uma string ou não, e baseado nesse booleano ele decide se vai ou não vai skippar espaços em branco.
+
 ## Como rodar
 
 ### Rodando com python nativamente
@@ -47,30 +89,3 @@ docker run --rm -it compiler:latest python -m src.main --token-file ./examples/e
 Este comando irá subir um container python utilizando a imagem que você buildou (ver o arquivo `Dockerfile` na raiz do projeto para mais detalhes), e rodar o programa com os parâmetros apropriados.
 
 **Atenção**: Se desejar adicionar um novo arquivo de exemplo no diretório, faça isso **antes** de executar o build da imagem (ou faça o build novamente caso queira adicionar  um novo arquivo).
-
-## Especificação do arquivo de tokens
-
-O arquivo de tokens é composto de blocos de três linhas, separados por uma linha em branco, no seguinte formato:
-
-```txt
-REGEX1
-TYPE1
-PRIORITY1
-
-REGEX2
-TYPE2
-PRIORITY2
-```
-
-A primeira linha é a regex do token, a segunda o seu tipo e a terceira a prioridade. A prioridade deve ser, obrigatoriamente, `HIGH`, `MEDIUM` ou `LOW`. Aconselhamos utilizar apenas `HIGH` para tokens de palavras reservadas e `LOW` para demais palavras: a prioridade `MEDIUM` foi criada mais como uma garantia futura do que de fato por necessidade.
-
-## Especificação do arquivo de entrada
-
-O arquivo de entrada deve ser um programa na linguagem BASIC, e cada linha deve ter, **obrigatoriamente** um número como primeiro token. Exemplo de programa em BASIC:
-
-```BASIC
-10 PRINT "HELLO WORLD"
-20 LET A = 10
-30 PRINT
-```
-
