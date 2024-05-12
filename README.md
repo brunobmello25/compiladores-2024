@@ -1,8 +1,10 @@
-# BASIC scanner e parser
+# BASIC scanner e Parser
 
 ## Como rodar
 
-para rodar o scanner e o parser, basta rodar  o arquivo `main.py`  como um módulo, passando como parâmetros o caminho para o arquivo de tokens e de entrada.
+### Rodando com python nativamente
+
+para rodar o scanner e o parser, basta rodar  o arquivo `main.py`  como um módulo, passando como parâmetros o caminho para o arquivo de tokens e de entrada. Este comando deve ser executado **na raiz do projeto**
 
 ```shell
 python -m src.main --token-file <caminho para o arquivo de tokens> --input-file <caminho para o arquivo de entrada>
@@ -27,6 +29,24 @@ make example1 > ./ast.txt
 ```
 
 Caso o programa possua algum erro (léxico ou sintático), estes erros são armazenados pelo scanner e pelo parser, e impressos no final da execução do programa.
+
+### Rodando com Docker
+
+Se preferir, você também pode rodar o programa utilizando docker, caso não tenha python instalado na sua máquina. Para isso, rode o seguinte comando para buildar a imagem python:
+
+```shell
+docker build -t compiler .
+```
+
+Em seguida, rode o seguinte comando para rodar o container criado:
+
+```shell
+docker run --rm -it compiler:latest python -m src.main --token-file ./examples/example1/tokens.txt --input-file examples/example1/input.txt
+```
+
+Este comando irá subir um container python utilizando a imagem que você buildou (ver o arquivo `Dockerfile` na raiz do projeto para mais detalhes), e rodar o programa com os parâmetros apropriados.
+
+**Atenção**: Se desejar adicionar um novo arquivo de exemplo no diretório, faça isso **antes** de executar o build da imagem (ou faça o build novamente caso queira adicionar  um novo arquivo).
 
 ## Especificação do arquivo de tokens
 
