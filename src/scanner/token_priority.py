@@ -22,3 +22,16 @@ class TokenPriority(Enum):
 
     def __eq__(self, other):
         return self.value == other.value
+
+    @staticmethod
+    def from_string(priority: str) -> 'TokenPriority':
+        if priority == 'EOF':
+            return TokenPriority.EOF
+        elif priority == 'HIGH':
+            return TokenPriority.HIGH
+        elif priority == 'MEDIUM':
+            return TokenPriority.MEDIUM
+        elif priority == 'LOW':
+            return TokenPriority.LOW
+        else:
+            raise ValueError(f"Invalid priority: {priority}")

@@ -4,96 +4,96 @@ HIGH
 
 [A-z]([A-z]|[0-9])*
 IDENTIFIER
-TokenPriority.LOW
+LOW
 
 "([A-z]|[0-9]| )*"
 STRING
-TokenPriority.HIGH
+HIGH
 
 LET
 LET
-TokenPriority.HIGH
+HIGH
 
 PRINT
 PRINT
-TokenPriority.HIGH
+HIGH
 
 IF
 IF
-TokenPriority.HIGH
+HIGH
 
 THEN
 THEN
-TokenPriority.HIGH
+HIGH
 
 ELSE
 ELSE
-TokenPriority.HIGH
+HIGH
 
 \(
 LPAREN
-TokenPriority.HIGH
+HIGH
 
 \)
 RPAREN
-TokenPriority.HIGH
+HIGH
 
 \+
 ADDITION
-TokenPriority.HIGH
+HIGH
 
 \*
 MULTIPLICATION
-TokenPriority.HIGH
+HIGH
 
 \/
 DIVISION
-TokenPriority.HIGH
+HIGH
 
 \-
 SUBTRACTION
-TokenPriority.HIGH
+HIGH
 
 \=
 ASSIGNMENT
-TokenPriority.HIGH
+HIGH
 
 \=\=
 EQUAL
-TokenPriority.HIGH
+HIGH
 
 \!\=
 NE
-TokenPriority.HIGH
+HIGH
 
 \>
 GT
-TokenPriority.HIGH
+HIGH
 
 \<
 LT
-TokenPriority.HIGH
+HIGH
 
 \>\=
 GTE
-TokenPriority.HIGH
+HIGH
 
 \<\=
 LTE
-TokenPriority.HIGH
+HIGH
 
 FOR
 FOR
-TokenPriority.HIGH
+HIGH
 
 NEXT
 NEXT
-TokenPriority.HIGH
+HIGH
 
 TO
 TO
-TokenPriority.HIGH
+HIGH
 
 STEP
 STEP
-TokenPriority.HIGH
+HIGH

@@ -3,12 +3,20 @@ from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, Fo
 from src.scanner.scanner import LexicalError, Scanner, Token
 
 
+class SyntaticalError(BaseException):
+    pass
+
+
 class Parser:
     def __init__(self, scanner: Scanner):
         self.scanner = scanner
         self.lexical_errors: List[LexicalError] = []
+        self.syntatical_errors: List[SyntaticalError] = []
         self.current_token = self.fetch_next_valid_token()
         self.peek_token = self.fetch_next_valid_token()
+
+    def has_errors(self):
+        return len(self.lexical_errors) > 0 or len(self.syntatical_errors) > 0
 
     def advance(self):
         self.current_token = self.peek_token
@@ -28,25 +36,31 @@ class Parser:
             self.advance()
             return value
         else:
-            raise Exception(f"Syntax Error: Expected {
-                            token_type}, found {self.current_token.type}")
+            raise self.advance_and_return_error(f"Syntax Error: Expected {
+                token_type}, found {self.current_token.type}")
 
     def expect_with_value(self, token_type: str, value: str) -> str:
         if self.current_token.type == token_type and self.current_token.value == value:
             self.advance()
             return value
         else:
-            raise Exception(f"Syntax Error: Expected {token_type} with value {value}, found {
-                            self.current_token.type} with value {self.current_token.value}")
+            raise self.advance_and_return_error(f"Syntax Error: Expected {token_type} with value {value}, found {
+                self.current_token.type} with value {self.current_token.value}")
 
     def parse(self) -> Program:
         statements = []
         while self.current_token.type != 'EOF':
-            if self.current_token.type == 'NUMBER':
-                line_number = int(self.current_token.value)
-                self.advance()
-                statement = self.parse_statement()
-                statements.append(tuple([statement, line_number]))
+            try:
+                if self.current_token.type == 'NUMBER':
+                    line_number = int(self.current_token.value)
+                    self.advance()
+                    statement = self.parse_statement()
+                    statements.append(tuple([statement, line_number]))
+                else:
+                    self.syntatical_errors.append(self.advance_and_return_error(
+                        f"expected line number before statement, found {self.current_token.type}"))
+            except SyntaticalError as e:
+                self.syntatical_errors.append(e)
         return Program(statements=statements)
 
     def parse_for_statement(self) -> ForStatement:
@@ -89,7 +103,8 @@ class Parser:
         elif self.current_token.type == 'IDENTIFIER' and self.peek_token.type == 'ASSIGNMENT':
             return self.parse_assignment(with_let=False)
         else:
-            raise Exception("Syntax Error: Unrecognized statement")
+            raise self.advance_and_return_error(f"Unrecognized statement. Expected LET, PRINT, IF, FOR or assignment. Got {
+                self.current_token.type}")
 
     def parse_if_statement(self) -> IfStatement:
         self.expect('IF')
@@ -170,7 +185,8 @@ class Parser:
             self.advance()
             return StringLiteral(value=value)
         else:
-            raise Exception("Syntax Error: Expected a factor")
+            raise self.advance_and_return_error(f"Syntax Error: Expected a factor. Got {
+                self.current_token.type}")
 
     def parse_term(self) -> Expression:
         if self.current_token.type == 'NUMBER':
@@ -186,4 +202,9 @@ class Parser:
             self.advance()
             return StringLiteral(value=value)
         else:
-            raise Exception("Syntax Error: Expected a term")
+            raise self.advance_and_return_error(f"Syntax Error: Expected a term. Got {
+                self.current_token.type}")
+
+    def advance_and_return_error(self, msg: str) -> SyntaticalError:
+        self.advance()
+        return SyntaticalError(msg)
