@@ -124,6 +124,14 @@ class ForStatement(ASTNode):
 
 
 @dataclass
+class GoToStatement(ASTNode):
+    label: str
+
+    def __str__(self, level=0):
+        return spaces * level + f"GoToStatement: {self.label}"
+
+
+@dataclass
 class Program(ASTNode):
     statements: List[Tuple[ASTNode, int]]
 

@@ -1,5 +1,5 @@
 from typing import List
-from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, ForStatement, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
+from src.parser.ast import ASTNode, Assignment, BinaryExpression, Expression, ForStatement, GoToStatement, IfStatement, NumberLiteral, PrintStatement, Program, StringLiteral, VariableReference
 from src.scanner.scanner import LexicalError, Scanner, Token
 
 
@@ -91,6 +91,12 @@ class Parser:
 
         return ForStatement(variable=var_name, start=start_expr, end=end_expr, step=step_expr, body=body_statements)
 
+    def parse_go_to_statement(self) -> GoToStatement:
+        self.expect('GO')
+        self.expect('TO')
+        label = self.expect('NUMBER')
+        return GoToStatement(label=label)
+
     def parse_statement(self) -> ASTNode:
         if self.current_token.type == 'LET':
             return self.parse_assignment()
@@ -102,6 +108,8 @@ class Parser:
             return self.parse_for_statement()
         elif self.current_token.type == 'IDENTIFIER' and self.peek_token.type == 'ASSIGNMENT':
             return self.parse_assignment(with_let=False)
+        elif self.current_token.type == 'GO':
+            return self.parse_go_to_statement()
         else:
             raise self.advance_and_return_error(f"Unrecognized statement. Expected LET, PRINT, IF, FOR or assignment. Got {
                 self.current_token.type}")

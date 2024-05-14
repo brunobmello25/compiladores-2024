@@ -42,6 +42,8 @@ O arquivo de entrada deve ser um programa na linguagem BASIC, e cada linha deve 
 
 - Apesar do scanner ser genérico, o parser foi feito apenas para a linguagem BASIC. Sendo assim, fizemos algumas suposições sobre os tipos de tokens que o scanner deve retornar. Para mais detalhes sobre esses tokens, conferir o arquivo de tokens dentro de `examples/example1/tokens.txt`.
 
+- No momento o scanner está funcionando lendo a entrada inteira em memória. Idealmente deveriamos adaptar essa entrada para uma stream de caracteres, e carregar esses caracteres em memória conforme formos processando.
+
 ## Como rodar
 
 ### Rodando com python nativamente
