@@ -60,11 +60,11 @@ def parse_input_file(file_path: str) -> str:
 
 def make_scanner(tokens: List[Tuple[str, str, TokenPriority]], input: str) -> Scanner:
     scanner_generator = ScannerGenerator()
-    for token in tokens:
-        scanner_generator = scanner_generator.add_token(
-            token[0],  token[1], token[2])
 
-    scanner_generator = scanner_generator.with_input(input)
+    for token in tokens:
+        scanner_generator.add_token(token[0],  token[1], token[2])
+
+    scanner_generator.with_input(input)
 
     scanner = scanner_generator.generate_scanner()
 
